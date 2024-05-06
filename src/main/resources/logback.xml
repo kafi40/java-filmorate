@@ -1,9 +1,9 @@
 <configuration>
 
-    <property name="HOME_LOG" value="/filmorate/log/app.log"/>
+    <property name="logs" value="./app.log"/>
 
     <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${HOME_LOG}</file>
+        <file>${logs}</file>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>/filmorate/log/app.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
