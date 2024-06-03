@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.NonNull;
 import ru.yandex.practicum.filmorate.annotation.MinimalDate;
 import java.time.LocalDate;
 
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 @Data
 public class Film {
     private Long id;
+    @NonNull
     @NotBlank(message = "Пустое название")
     private String name;
     @Size(max = 200, message = "Превышена длина описания")
