@@ -7,9 +7,11 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
-public class User {
+public class User extends Entity {
     private Long id;
     @NotBlank(message = "Пустой E-mail")
     @Email(message = "Некорректный E-mail")
@@ -20,5 +22,10 @@ public class User {
     private String name;
     @Past(message = "Некорректная дата рождения")
     private LocalDate birthday;
+    private Set<User> friendsSet;
+
+    public User() {
+        friendsSet = new HashSet<>();
+    }
 
 }
