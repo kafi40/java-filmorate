@@ -1,15 +1,14 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class User extends Entity {
     private Long id;
@@ -22,7 +21,7 @@ public class User extends Entity {
     private String name;
     @Past(message = "Некорректная дата рождения")
     private LocalDate birthday;
-    private Set<User> friendsSet;
+    private Set<Long> friendsSet;
 
     public User() {
         friendsSet = new HashSet<>();

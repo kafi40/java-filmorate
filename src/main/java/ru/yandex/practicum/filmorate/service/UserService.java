@@ -44,7 +44,7 @@ public class UserService extends BaseService<User> {
     }
 
     public Set<User> getFriends(Long id) {
-        return storage.get(id).getFriendsSet();
+        return storage.getFriends(id);
     }
 
     public Set<User> getCommonFriends(Long id, Long otherId) {

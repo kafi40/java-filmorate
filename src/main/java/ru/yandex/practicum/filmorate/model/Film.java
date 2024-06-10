@@ -4,13 +4,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.annotation.MinimalDate;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Film.
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class Film extends Entity {
     private Long id;
@@ -23,4 +26,8 @@ public class Film extends Entity {
     @Positive(message = "Отрицательное значение или ноль")
     private Integer duration;
     private Set<Long> likesSet;
+
+    public Film() {
+        this.likesSet = new HashSet<>();
+    }
 }

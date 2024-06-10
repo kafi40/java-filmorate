@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Entity;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +19,7 @@ public abstract class InMemoryStorage<T extends Entity> implements BaseStorage<T
 
     @Override
     public T get(Long id) {
+        checkId(id);
         return storage.get(id);
     }
 
@@ -37,6 +40,15 @@ public abstract class InMemoryStorage<T extends Entity> implements BaseStorage<T
 
     @Override
     public T delete(Long id) {
+        checkId(id);
         return storage.remove(id);
+    }
+
+    protected void checkId(Long... arg) {
+        for (Long aLong : arg) {
+            if (storage.get(aLong) == null) {
+                throw new NotFoundException("Объект с ID = " + aLong + " не найден");
+            }
+        }
     }
 }
