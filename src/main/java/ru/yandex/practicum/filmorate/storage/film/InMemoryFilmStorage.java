@@ -9,17 +9,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class InMemoryFilmStorage extends InMemoryStorage<Film> implements FilmStorage{
-
+public class InMemoryFilmStorage extends InMemoryStorage<Film> implements FilmStorage {
     @Override
     public boolean putLike(Long id, Long userId) {
-        checkId(id, userId);
         return getStorage().get(id).getLikesSet().add(userId);
     }
 
     @Override
     public boolean deleteLike(Long id, Long userId) {
-        checkId(id, userId);
         return getStorage().get(id).getLikesSet().remove(userId);
     }
 

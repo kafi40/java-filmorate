@@ -1,21 +1,18 @@
 package ru.yandex.practicum.filmorate.controller;
+
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-
 import java.util.Collection;
 import java.util.List;
 
 @RestController
 @RequestMapping("/films")
 @RequiredArgsConstructor
-@Validated
 public class FilmController {
 
     private final FilmService service;
@@ -55,7 +52,7 @@ public class FilmController {
 
     @GetMapping("/popular")
     public List<Film> getFilmsTop(@RequestParam(defaultValue = "10") int size) {
-        if(size < 1) {
+        if (size < 1) {
             throw new ValidationException("size", "Некорректный размер выборки. Размер должен быть больше нуля");
         }
         return service.getTopFilms(size);
@@ -67,7 +64,7 @@ public class FilmController {
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public boolean deleteLike(@PathVariable @NotBlank Long id, @PathVariable Long userId) {
+    public boolean deleteLike(@PathVariable Long id, @PathVariable Long userId) {
         return service.deleteLike(id, userId);
     }
 

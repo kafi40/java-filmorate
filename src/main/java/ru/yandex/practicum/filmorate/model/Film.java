@@ -10,9 +10,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Film.
- */
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class Film extends Entity {

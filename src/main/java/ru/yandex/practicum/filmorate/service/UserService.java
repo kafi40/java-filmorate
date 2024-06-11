@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
@@ -10,10 +11,11 @@ import java.util.Set;
 @Service
 public class UserService extends BaseService<User> {
 
-    private final InMemoryUserStorage storage;
-    public UserService(InMemoryUserStorage storage) {
-        super(storage);
-        this.storage = (InMemoryUserStorage) inMemoryStorage;
+    private final InMemoryUserStorage inMemoryStorage;
+
+    public UserService(InMemoryUserStorage inMemoryStorage) {
+        super(inMemoryStorage);
+        this.inMemoryStorage = inMemoryStorage;
     }
 
     @Override
@@ -22,7 +24,7 @@ public class UserService extends BaseService<User> {
         if (entity.getName() == null || entity.getName().isBlank()) {
             entity.setName(entity.getLogin());
         }
-        return storage.save(entity);
+        return inMemoryStorage.save(entity);
     }
 
     @Override
@@ -30,33 +32,46 @@ public class UserService extends BaseService<User> {
         if (newEntity.getId() == null) {
             throw new ValidationException("Должен быть указан ID");
         }
-        if (storage.getStorage().containsKey(newEntity.getId())) {
-            User oldUser = storage.getStorage().get(newEntity.getId());
+        if (inMemoryStorage.getStorage().containsKey(newEntity.getId())) {
+            User oldUser = inMemoryStorage.getStorage().get(newEntity.getId());
             oldUser.setLogin(newEntity.getLogin());
             oldUser.setEmail(newEntity.getEmail());
             oldUser.setBirthday(newEntity.getBirthday());
             if (!(newEntity.getName() == null || newEntity.getName().isBlank())) {
                 oldUser.setName(newEntity.getName());
             }
-            return oldUser;
+            return inMemoryStorage.update(oldUser);
         }
-        throw new ValidationException("Пользователя с ID " + newEntity.getId() + " не существует");
+        throw new NotFoundException("Пользователя с ID " + newEntity.getId() + " не существует");
     }
 
     public Set<User> getFriends(Long id) {
-        return storage.getFriends(id);
+        checkId(id);
+        return inMemoryStorage.getFriends(id);
     }
 
     public Set<User> getCommonFriends(Long id, Long otherId) {
-        return storage.getCommonFriends(id, otherId);
+        checkId(id);
+        checkId(otherId);
+        return inMemoryStorage.getCommonFriends(id, otherId);
     }
 
     public boolean addFriend(Long id, Long otherId) {
-       return storage.addFriend(id, otherId);
+        if (id.equals(otherId)) {
+            throw new RuntimeException("Нельзя добавить самого себя в друзья");
+        }
+        checkId(id);
+        checkId(otherId);
+       return inMemoryStorage.addFriend(id, otherId);
     }
 
     public boolean deleteFriend(Long id, Long otherId) {
-        return storage.deleteFriend(id, otherId);
+        if (id.equals(otherId)) {
+            throw new RuntimeException("Нельзя удалить самого себя из друзей");
+        }
+        checkId(id);
+        checkId(otherId);
+        return inMemoryStorage.deleteFriend(id, otherId);
     }
 
 }

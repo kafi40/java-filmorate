@@ -1,19 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.ValidationException;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -34,9 +28,9 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-        User createdUser = service.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    @ResponseStatus(HttpStatus.CREATED)
+    public User createUser(@Valid @RequestBody User user) {
+        return service.save(user);
     }
 
     @PutMapping
@@ -48,7 +42,7 @@ public class UserController {
     public User deleteUser(@PathVariable Long id) {
         return service.delete(id);
     }
-// Исправить рекурсию
+
     @GetMapping("/{id}/friends")
     public Set<User> getFriends(@PathVariable Long id) {
         return service.getFriends(id);

@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
@@ -9,10 +10,13 @@ import java.util.List;
 
 @Service
 public class FilmService extends BaseService<Film> {
-    private final InMemoryFilmStorage storage;
-    public FilmService(InMemoryFilmStorage storage) {
-        super(storage);
-        this.storage = (InMemoryFilmStorage) inMemoryStorage;
+    private final InMemoryFilmStorage inMemoryStorage;
+    private final UserService userService;
+
+    public FilmService(InMemoryFilmStorage inMemoryStorage, UserService userService) {
+        super(inMemoryStorage);
+        this.inMemoryStorage = inMemoryStorage;
+        this.userService = userService;
     }
 
     @Override
@@ -28,18 +32,22 @@ public class FilmService extends BaseService<Film> {
             oldFilm.setDuration(entity.getDuration());
             return oldFilm;
         }
-        throw new ValidationException("Фильма с ID " + entity.getId() + " не существует");
+        throw new NotFoundException("Фильма с ID " + entity.getId() + " не существует");
     }
 
     public boolean putLike(Long id, Long userId) {
-        return storage.putLike(id, userId);
+        checkId(id);
+        userService.checkId(userId);
+        return inMemoryStorage.putLike(id, userId);
     }
 
     public boolean deleteLike(Long id, Long userId) {
-        return storage.deleteLike(id, userId);
+        checkId(id);
+        userService.checkId(userId);
+        return inMemoryStorage.deleteLike(id, userId);
     }
 
     public List<Film> getTopFilms(int size) {
-        return storage.getTopFilms(size);
+        return inMemoryStorage.getTopFilms(size);
     }
 }

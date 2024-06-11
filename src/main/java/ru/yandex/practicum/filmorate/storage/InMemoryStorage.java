@@ -2,14 +2,17 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Entity;
+
+
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @EqualsAndHashCode
 @Data
+@Component
 public abstract class InMemoryStorage<T extends Entity> implements BaseStorage<T> {
     private final HashMap<Long, T> storage;
 
@@ -18,9 +21,8 @@ public abstract class InMemoryStorage<T extends Entity> implements BaseStorage<T
     }
 
     @Override
-    public T get(Long id) {
-        checkId(id);
-        return storage.get(id);
+    public Optional<T> get(Long id) {
+        return Optional.ofNullable(storage.get(id));
     }
 
     @Override
@@ -30,7 +32,8 @@ public abstract class InMemoryStorage<T extends Entity> implements BaseStorage<T
 
     @Override
     public T save(T entity) {
-        return storage.put(entity.getId(), entity);
+        storage.put(entity.getId(), entity);
+        return entity;
     }
 
     @Override
@@ -40,15 +43,6 @@ public abstract class InMemoryStorage<T extends Entity> implements BaseStorage<T
 
     @Override
     public T delete(Long id) {
-        checkId(id);
         return storage.remove(id);
-    }
-
-    protected void checkId(Long... arg) {
-        for (Long aLong : arg) {
-            if (storage.get(aLong) == null) {
-                throw new NotFoundException("Объект с ID = " + aLong + " не найден");
-            }
-        }
     }
 }

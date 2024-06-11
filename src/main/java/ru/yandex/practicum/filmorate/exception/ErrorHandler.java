@@ -21,10 +21,4 @@ public class ErrorHandler {
     public Map<String, String> validationException(final  ValidationException e) {
         return Map.of(e.getParameter(), e.getReason());
     }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> error(final Throwable e) {
-        return Map.of("Error", e.getMessage());
-    }
 }

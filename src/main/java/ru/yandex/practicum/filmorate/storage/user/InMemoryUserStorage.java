@@ -12,7 +12,6 @@ public class InMemoryUserStorage extends InMemoryStorage<User> implements UserSt
 
     @Override
     public Set<User> getFriends(Long id) {
-        checkId(id);
         User user = getStorage().get(id);
         return getStorage().entrySet().stream()
                 .filter(entry -> user.getFriendsSet().contains(entry.getKey()))
@@ -22,7 +21,6 @@ public class InMemoryUserStorage extends InMemoryStorage<User> implements UserSt
 
     @Override
     public Set<User> getCommonFriends(Long id, Long otherId) {
-        checkId(id, otherId);
         Set<Long> commonFriends = getStorage().get(id).getFriendsSet().stream()
                 .filter(getStorage().get(otherId).getFriendsSet()::contains)
                 .collect(Collectors.toSet());
@@ -35,20 +33,12 @@ public class InMemoryUserStorage extends InMemoryStorage<User> implements UserSt
 
     @Override
     public boolean addFriend(Long id, Long otherId) {
-        if (id.equals(otherId)) {
-            throw new RuntimeException("Нельзя добавить самого себя в друзья");
-        }
-        checkId(id, otherId);
         getStorage().get(otherId).getFriendsSet().add(id);
         return getStorage().get(id).getFriendsSet().add(otherId);
     }
 
     @Override
     public boolean deleteFriend(Long id, Long otherId) {
-        if (id.equals(otherId)) {
-            throw new RuntimeException("Нельзя удалить самого себя из друзей");
-        }
-        checkId(id, otherId);
         getStorage().get(otherId).getFriendsSet().remove(id);
         return getStorage().get(id).getFriendsSet().remove(otherId);
     }
