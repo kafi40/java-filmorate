@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.annotation.MinimalDate;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Component
 public class Film extends Entity {
     private Long id;
     @NotBlank(message = "Пустое название")

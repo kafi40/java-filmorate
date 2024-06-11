@@ -14,7 +14,6 @@ import java.util.List;
 @RequestMapping("/films")
 @RequiredArgsConstructor
 public class FilmController {
-
     private final FilmService service;
 
     @GetMapping
@@ -67,5 +66,4 @@ public class FilmController {
     public boolean deleteLike(@PathVariable Long id, @PathVariable Long userId) {
         return service.deleteLike(id, userId);
     }
-
 }

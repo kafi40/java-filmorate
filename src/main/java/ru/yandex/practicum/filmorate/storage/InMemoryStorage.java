@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Entity;
 
 
@@ -12,7 +11,6 @@ import java.util.Optional;
 
 @EqualsAndHashCode
 @Data
-@Component
 public abstract class InMemoryStorage<T extends Entity> implements BaseStorage<T> {
     private final HashMap<Long, T> storage;
 

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import jakarta.validation.ValidationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,6 +14,7 @@ public class UserService extends BaseService<User> {
 
     private final InMemoryUserStorage inMemoryStorage;
 
+    @Autowired
     public UserService(InMemoryUserStorage inMemoryStorage) {
         super(inMemoryStorage);
         this.inMemoryStorage = inMemoryStorage;
