@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.model;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -11,7 +10,6 @@ import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Component
 public class User extends Entity {
     private Long id;
     @NotBlank(message = "Пустой E-mail")
