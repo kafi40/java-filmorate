@@ -2,15 +2,13 @@ package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class User extends Entity {
+public class User {
     private Long id;
     @NotBlank(message = "Пустой E-mail")
     @Email(message = "Некорректный E-mail")

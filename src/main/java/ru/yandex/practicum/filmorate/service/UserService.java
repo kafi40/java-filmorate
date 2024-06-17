@@ -1,35 +1,47 @@
 package ru.yandex.practicum.filmorate.service;
 
 import jakarta.validation.ValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
-public class UserService extends BaseService<User> {
+public class UserService {
 
     private final InMemoryUserStorage inMemoryStorage;
 
-    @Autowired
     public UserService(InMemoryUserStorage inMemoryStorage) {
-        super(inMemoryStorage);
         this.inMemoryStorage = inMemoryStorage;
     }
 
-    @Override
-    public User save(User entity) {
-        entity.setId(getNextId());
-        if (entity.getName() == null || entity.getName().isBlank()) {
-            entity.setName(entity.getLogin());
+    public User get(Long id) {
+        if (inMemoryStorage.get(id).isPresent()) {
+            return inMemoryStorage.get(id).get();
+        } else {
+            throw new NotFoundException("Объект с ID = " + id + " не найден");
         }
-        return inMemoryStorage.save(entity);
     }
 
-    @Override
+    public List<User> getAll() {
+        return inMemoryStorage.getAll();
+    }
+
+    public User save(User user) {
+        user.setId(getNextId());
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        return inMemoryStorage.save(user);
+    }
+
+    public User delete(Long id) {
+        return inMemoryStorage.delete(id);
+    }
+
     public User update(User newEntity) {
         if (newEntity.getId() == null) {
             throw new ValidationException("Должен быть указан ID");
@@ -74,6 +86,21 @@ public class UserService extends BaseService<User> {
         checkId(id);
         checkId(otherId);
         return inMemoryStorage.deleteFriend(id, otherId);
+    }
+
+    protected long getNextId() {
+        long currentMaxId = inMemoryStorage.getStorage().keySet()
+                .stream()
+                .mapToLong(id -> id)
+                .max()
+                .orElse(0);
+        return ++currentMaxId;
+    }
+
+    public void checkId(Long id) {
+        if (inMemoryStorage.get(id).isEmpty()) {
+            throw new NotFoundException("Объекта с ID " + id + " не существует");
+        }
     }
 
 }

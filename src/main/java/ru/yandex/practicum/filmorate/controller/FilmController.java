@@ -41,12 +41,7 @@ public class FilmController {
 
     @DeleteMapping("/{id}")
     public Film deleteFilm(@PathVariable Long id) {
-        try {
-            return service.get(id);
-        } catch (RuntimeException e) {
-            System.out.println("Ok");
-            return null;
-        }
+        return service.delete(id);
     }
 
     @GetMapping("/popular")
