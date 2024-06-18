@@ -1,12 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class User {
@@ -20,5 +19,10 @@ public class User {
     private String name;
     @Past(message = "Некорректная дата рождения")
     private LocalDate birthday;
+    private Set<Long> friendsSet;
+
+    public User() {
+        friendsSet = new HashSet<>();
+    }
 
 }
