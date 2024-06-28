@@ -14,7 +14,7 @@ public interface UserStorage {
 
     User update(User newUser);
 
-    User delete(Long id);
+    boolean delete(Long id);
 
     Set<User> getFriends(Long id);
 

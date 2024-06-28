@@ -1,17 +1,17 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.dto.film;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.annotation.MinimalDate;
+import ru.yandex.practicum.filmorate.dto.genre.GenreFromFilmRequest;
+import ru.yandex.practicum.filmorate.dto.rating.RatingFromFilmRequest;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Data
-public class Film  {
+public class NewFilmRequest {
     private Long id;
     @NotBlank(message = "Пустое название")
     private String name;
@@ -21,12 +21,6 @@ public class Film  {
     private LocalDate releaseDate;
     @Positive(message = "Отрицательное значение или ноль")
     private Integer duration;
-    private Rating mpa;
-    private List<Genre> genres;
-    private Set<Long> likesSet;
-
-
-    public Film() {
-        this.likesSet = new HashSet<>();
-    }
+    private RatingFromFilmRequest mpa;
+    private List<GenreFromFilmRequest> genres;
 }

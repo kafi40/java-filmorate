@@ -13,7 +13,7 @@ public interface FilmStorage {
 
     Film update(Film newFilm);
 
-    Film delete(Long id);
+    boolean delete(Long id);
 
     boolean putLike(Long id, Long userId);
 

@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.dto.film.FilmDto;
+import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
+import ru.yandex.practicum.filmorate.exception.ValidException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import java.util.Collection;
@@ -18,36 +20,36 @@ public class FilmController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Collection<Film> getFilms() {
+    public Collection<FilmDto> getFilms() {
         return service.getAll();
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Film getFilm(@PathVariable Long id) {
+    public FilmDto getFilm(@PathVariable Long id) {
         return service.get(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Film createFilm(@Valid @RequestBody Film film) {
-        return service.save(film);
+    public FilmDto createFilm(@Valid @RequestBody NewFilmRequest newFilmRequest) {
+        return service.save(newFilmRequest);
     }
 
     @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film newFilm) {
+    public FilmDto updateFilm(@Valid @RequestBody Film newFilm) {
         return service.update(newFilm);
     }
 
     @DeleteMapping("/{id}")
-    public Film deleteFilm(@PathVariable Long id) {
+    public boolean deleteFilm(@PathVariable Long id) {
         return service.delete(id);
     }
 
     @GetMapping("/popular")
     public List<Film> getFilmsTop(@RequestParam(defaultValue = "10") int size) {
         if (size < 1) {
-            throw new ValidationException("size", "Некорректный размер выборки. Размер должен быть больше нуля");
+            throw new ValidException("size", "Некорректный размер выборки. Размер должен быть больше нуля");
         }
         return service.getTopFilms(size);
     }

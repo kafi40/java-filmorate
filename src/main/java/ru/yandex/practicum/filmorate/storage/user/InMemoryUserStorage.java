@@ -38,8 +38,8 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User delete(Long id) {
-        return storage.remove(id);
+    public boolean delete(Long id) {
+        return storage.remove(id) != null;
     }
 
     @Override
