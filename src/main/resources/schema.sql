@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS "user_film_liked"
 CREATE TABLE IF NOT EXISTS "user_friend"
 (
     user_id INTEGER NOT NULL REFERENCES "user" (id),
-    user_friend_id INTEGER NOT NULL REFERENCES "user" (id),
+    friend_id INTEGER NOT NULL REFERENCES "user" (id),
     is_accept BOOLEAN NOT NULL DEFAULT FALSE
 );
+

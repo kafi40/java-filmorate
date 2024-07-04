@@ -18,9 +18,17 @@ public interface UserStorage {
 
     Set<User> getFriends(Long id);
 
-    Set<User> getCommonFriends(Long id, Long otherId);
+    Set<User> getCommonFriends(Object... params);
 
-    boolean addFriend(Long id, Long otherId);
+    boolean addFriend(Object... params);
 
-    boolean deleteFriend(Long id, Long otherId);
+    boolean deleteFriend(Object... params);
+
+    boolean isFriendRequest(Object... params);
+
+    boolean acceptRequest(Object... params);
+
+    boolean isFriend(Object... params);
+
+    boolean removeRequest(Object... params);
 }

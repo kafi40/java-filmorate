@@ -5,8 +5,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.BaseDbStorage;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage {
@@ -35,7 +38,7 @@ public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage
     }
 
     @Override
-    public List<Genre> getForFilm(Long id) {
-        return jdbc.query(FIND_GENRE_FOR_FILM, mapper, id);
+    public Set<Genre> getForFilm(Long id) {
+        return new HashSet<>(jdbc.query(FIND_GENRE_FOR_FILM, mapper, id));
     }
 }

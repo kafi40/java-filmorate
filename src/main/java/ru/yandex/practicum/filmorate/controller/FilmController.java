@@ -5,9 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
-import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
+import ru.yandex.practicum.filmorate.dto.film.NewOrUpdateFilm;
 import ru.yandex.practicum.filmorate.exception.ValidException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import java.util.Collection;
 import java.util.List;
@@ -32,13 +31,13 @@ public class FilmController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FilmDto createFilm(@Valid @RequestBody NewFilmRequest newFilmRequest) {
-        return service.save(newFilmRequest);
+    public FilmDto createFilm(@Valid @RequestBody NewOrUpdateFilm request) {
+        return service.save(request);
     }
 
     @PutMapping
-    public FilmDto updateFilm(@Valid @RequestBody Film newFilm) {
-        return service.update(newFilm);
+    public FilmDto updateFilm(@Valid @RequestBody NewOrUpdateFilm request) {
+        return service.update(request);
     }
 
     @DeleteMapping("/{id}")
@@ -47,7 +46,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getFilmsTop(@RequestParam(defaultValue = "10") int size) {
+    public List<FilmDto> getFilmsTop(@RequestParam(defaultValue = "10") int size) {
         if (size < 1) {
             throw new ValidException("size", "Некорректный размер выборки. Размер должен быть больше нуля");
         }

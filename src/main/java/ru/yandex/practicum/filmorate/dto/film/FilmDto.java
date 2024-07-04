@@ -2,9 +2,10 @@ package ru.yandex.practicum.filmorate.dto.film;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.dto.genre.GenreFromFilmRequest;
-import ru.yandex.practicum.filmorate.dto.rating.RatingFromFilmRequest;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -15,6 +16,10 @@ public class FilmDto {
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
-    private RatingFromFilmRequest mpa;
-    private List<GenreFromFilmRequest> genres;
+    private Rating mpa;
+    private List<Genre> genres;
+
+    public FilmDto() {
+        this.genres = new ArrayList<>();
+    }
 }

@@ -17,8 +17,10 @@ public interface FilmStorage {
 
     boolean putLike(Long id, Long userId);
 
-    boolean deleteLike(Long id, Long userid);
+    boolean deleteLike(Long id, Long userId);
 
     List<Film> getTopFilms(int size);
+
+    void addGenreForFilm(Long id, Long genreId);
 
 }

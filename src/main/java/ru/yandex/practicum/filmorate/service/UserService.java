@@ -1,10 +1,11 @@
 package ru.yandex.practicum.filmorate.service;
 
-import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.dto.user.NewOrUpdateUser;
+import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -35,39 +36,35 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public UserDto save(User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
+    public UserDto save(NewOrUpdateUser request) {
+        if (request.getName() == null || request.getName().isBlank()) {
+            request.setName(request.getLogin());
         }
-        User newUser = repository.save(user);
-        return UserMapper.mapToUserDto(newUser);
+        User user = UserMapper.mapToUser(request);
+        user = repository.save(user);
+        return UserMapper.mapToUserDto(user);
     }
 
-    public UserDto update(User newUser) {
-        if (newUser.getId() == null) {
-            throw new ValidationException("Должен быть указан ID");
+    public UserDto update(NewOrUpdateUser request) {
+        if (request.getId() == null) {
+            throw new ValidException("ID","Должен быть указан ID");
         }
-        if (repository.get(newUser.getId()).isPresent()) {
-            User oldUser = repository.get(newUser.getId()).get();
-            oldUser.setLogin(newUser.getLogin());
-            oldUser.setEmail(newUser.getEmail());
-            oldUser.setBirthday(newUser.getBirthday());
-            if (!(newUser.getName() == null || newUser.getName().isBlank())) {
-                oldUser.setName(newUser.getName());
-            }
-            User user = repository.update(oldUser);
-            return UserMapper.mapToUserDto(user);
-        }
-        throw new NotFoundException("Пользователя с ID " + newUser.getId() + " не существует");
+        User updatedUser = repository.get(request.getId())
+                .map(user -> UserMapper.updateUserFields(user, request))
+                .orElseThrow(() -> new NotFoundException("Пользователь с ID " + request.getId() + " не найден"));
+        updatedUser = repository.update(updatedUser);
+        return UserMapper.mapToUserDto(updatedUser);
     }
 
     public boolean delete(Long id) {
         return repository.delete(id);
     }
 
-    public Set<User> getFriends(Long id) {
+    public Set<UserDto> getFriends(Long id) {
         checkId(id);
-        return repository.getFriends(id);
+        return repository.getFriends(id).stream()
+                .map(UserMapper::mapToUserDto)
+                .collect(Collectors.toSet());
     }
 
     public Set<User> getCommonFriends(Long id, Long otherId) {
@@ -82,6 +79,9 @@ public class UserService {
         }
         checkId(id);
         checkId(otherId);
+        if (repository.isFriendRequest(id, otherId)) {
+            return repository.acceptRequest(id, otherId);
+        }
        return repository.addFriend(id, otherId);
     }
 
@@ -91,6 +91,9 @@ public class UserService {
         }
         checkId(id);
         checkId(otherId);
+        if (repository.isFriend(id, otherId)) {
+            return repository.removeRequest(id, otherId);
+        }
         return repository.deleteFriend(id, otherId);
     }
 

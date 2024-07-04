@@ -4,7 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.dto.user.NewOrUpdateUser;
+import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -30,13 +31,13 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createUser(@Valid @RequestBody User user) {
-        return service.save(user);
+    public UserDto createUser(@Valid @RequestBody NewOrUpdateUser request) {
+        return service.save(request);
     }
 
     @PutMapping
-    public UserDto updateUser(@Valid @RequestBody User newUser) {
-        return service.update(newUser);
+    public UserDto updateUser(@Valid @RequestBody NewOrUpdateUser request) {
+        return service.update(request);
     }
 
     @DeleteMapping("/{id}")
@@ -45,7 +46,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public Set<User> getFriends(@PathVariable Long id) {
+    public Set<UserDto> getFriends(@PathVariable Long id) {
         return service.getFriends(id);
     }
 

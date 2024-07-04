@@ -3,13 +3,12 @@ package ru.yandex.practicum.filmorate.mapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
-import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
-import ru.yandex.practicum.filmorate.dto.genre.GenreFromFilmRequest;
-import ru.yandex.practicum.filmorate.dto.rating.RatingFromFilmRequest;
+import ru.yandex.practicum.filmorate.dto.film.NewOrUpdateFilm;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 
-import java.util.ArrayList;
 import java.util.List;
+
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FilmMapper {
@@ -20,32 +19,24 @@ public final class FilmMapper {
         filmDto.setDescription(film.getDescription());
         filmDto.setReleaseDate(film.getReleaseDate());
         filmDto.setDuration(film.getDuration());
-
-        RatingFromFilmRequest mpa = new RatingFromFilmRequest();
-        mpa.setId(film.getMpa().getId());
-        filmDto.setMpa(mpa);
-
-        List<GenreFromFilmRequest> genres = new ArrayList<>();
-        film.getGenres().forEach(g -> {
-            GenreFromFilmRequest genre = new GenreFromFilmRequest();
-            genre.setId(g.getId());
-            genres.add(genre);
-        });
+        filmDto.setMpa(film.getMpa());
+        List<Genre> genres = film.getGenres().stream()
+                .sorted(Genre::compareTo)
+                .toList();
         filmDto.setGenres(genres);
         return filmDto;
     }
 
-    public static Film mapToFilm(NewFilmRequest request) {
+    public static Film mapToFilm(NewOrUpdateFilm request) {
         Film film = new Film();
         film.setName(request.getName());
         film.setDescription(request.getDescription());
         film.setReleaseDate(request.getReleaseDate());
         film.setDuration(request.getDuration());
-
         return film;
     }
 
-    public static Film updateFilmFields(Film film, NewFilmRequest request) {
+    public static Film updateFilmFields(Film film, NewOrUpdateFilm request) {
         film.setName(request.getName());
         film.setDescription(request.getDescription());
         film.setReleaseDate(request.getReleaseDate());

@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Set;
 
 @Component
@@ -33,7 +32,7 @@ public class FilmRowMapper implements RowMapper<Film> {
         mpa.setId(rs.getLong("rating_id"));
         film.setMpa(mpa);
 
-        List<Genre> genres = genreRepository.getForFilm(film.getId());
+        Set<Genre> genres = genreRepository.getForFilm(film.getId());
         film.setGenres(genres);
         return film;
     }
