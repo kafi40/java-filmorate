@@ -30,6 +30,7 @@ public class UserService {
     }
 
     public List<UserDto> getAll() {
+
         return repository.getAll()
                 .stream()
                 .map(UserMapper::mapToUserDto)
