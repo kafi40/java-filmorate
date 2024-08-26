@@ -9,22 +9,22 @@ import java.util.Set;
 
 @Service
 public class GenreService {
-    private final GenreStorage repository;
+    private final GenreStorage genreStorage;
 
-    public GenreService(GenreStorage repository) {
-        this.repository = repository;
+    public GenreService(GenreStorage genreStorage) {
+        this.genreStorage = genreStorage;
     }
 
     public Genre get(Long id) {
-        return repository.get(id)
+        return genreStorage.get(id)
                 .orElseThrow(() -> new NotFoundException("Жанр с ID = " + id + " не найден"));
     }
 
     public List<Genre> getAll() {
-        return repository.getAll();
+        return genreStorage.getAll();
     }
 
     public Set<Genre> getForFilm(Long id) {
-        return repository.getForFilm(id);
+        return genreStorage.getForFilm(id);
     }
 }

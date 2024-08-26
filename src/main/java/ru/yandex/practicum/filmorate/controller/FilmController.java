@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.NewOrUpdateFilm;
-import ru.yandex.practicum.filmorate.exception.ValidException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import java.util.Collection;
 import java.util.List;
@@ -48,7 +48,7 @@ public class FilmController {
     @GetMapping("/popular")
     public List<FilmDto> getFilmsTop(@RequestParam(defaultValue = "10") int size) {
         if (size < 1) {
-            throw new ValidException("size", "Некорректный размер выборки. Размер должен быть больше нуля");
+            throw new ValidationException("size", "Некорректный размер выборки. Размер должен быть больше нуля");
         }
         return service.getTopFilms(size);
     }

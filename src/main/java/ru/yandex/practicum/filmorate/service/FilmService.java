@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.NewOrUpdateFilm;
 import ru.yandex.practicum.filmorate.dto.genre.GenreFromFilmRequest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -18,21 +18,21 @@ import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
-    private final FilmStorage repository;
+    private final FilmStorage filmStorage;
     private final UserService userService;
     private final GenreService genreService;
     private final RatingService ratingService;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage repository, UserService userService,
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService,
                        GenreService genreService, RatingService ratingService) {
-        this.repository = repository;
+        this.filmStorage = filmStorage;
         this.userService = userService;
         this.genreService = genreService;
         this.ratingService = ratingService;
     }
 
     public FilmDto get(Long id) {
-        return repository.get(id)
+        return filmStorage.get(id)
                 .map(film -> {
                     film.setMpa(ratingService.get(film.getMpa().getId()));
                     film.setGenres(genreService.getForFilm(id));
@@ -43,7 +43,7 @@ public class FilmService {
     }
 
     public List<FilmDto> getAll() {
-        return repository.getAll()
+        return filmStorage.getAll()
                 .stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
@@ -52,48 +52,48 @@ public class FilmService {
     public FilmDto save(NewOrUpdateFilm request) {
         Film film = FilmMapper.mapToFilm(request);
         film.setMpa(getRating(request.getMpa().getId()));
-        film = repository.save(film);
+        film = filmStorage.save(film);
         film.setGenres(saveGenre(film.getId(), request.getGenres()));
         return FilmMapper.mapToFilmDto(film);
     }
 
     public FilmDto update(NewOrUpdateFilm request) {
         if (request.getId() == null) {
-            throw new ValidException("ID","Должен быть указан ID");
+            throw new ValidationException("ID","Должен быть указан ID");
         }
-        Film updatedFilm = repository.get(request.getId())
+        Film updatedFilm = filmStorage.get(request.getId())
                 .map(film -> FilmMapper.updateFilmFields(film, request))
                 .orElseThrow(() -> new NotFoundException("Фильм с ID " + request.getId() + " не найден"));
         updatedFilm.setMpa(getRating(request.getMpa().getId()));
         updatedFilm.setGenres(saveGenre(request.getId(), request.getGenres()));
-        updatedFilm = repository.update(updatedFilm);
+        updatedFilm = filmStorage.update(updatedFilm);
         return FilmMapper.mapToFilmDto(updatedFilm);
     }
 
     public boolean delete(Long id) {
-        return repository.delete(id);
+        return filmStorage.delete(id);
     }
 
     public boolean putLike(Long id, Long userId) {
         checkId(id);
         userService.checkId(userId);
-        return repository.putLike(id, userId);
+        return filmStorage.putLike(id, userId);
     }
 
     public boolean deleteLike(Long id, Long userId) {
         checkId(id);
         userService.checkId(userId);
-        return repository.deleteLike(id, userId);
+        return filmStorage.deleteLike(id, userId);
     }
 
     public List<FilmDto> getTopFilms(int size) {
-        return repository.getTopFilms(size).stream()
+        return filmStorage.getTopFilms(size).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
     public void checkId(Long id) {
-        if (repository.get(id).isEmpty()) {
+        if (filmStorage.get(id).isEmpty()) {
             throw new NotFoundException("Объекта с ID " + id + " не существует");
         }
     }
@@ -102,7 +102,7 @@ public class FilmService {
         try {
             return ratingService.get(id);
         } catch (NotFoundException e) {
-            throw new ValidException("ID", "Жанр с ID " + id + " не найден");
+            throw new ValidationException("ID", "Жанр с ID " + id + " не найден");
         }
     }
 
@@ -111,9 +111,9 @@ public class FilmService {
             genres.forEach(g -> {
                 try {
                     genreService.get(g.getId());
-                    repository.addGenreForFilm(id, g.getId());
+                    filmStorage.addGenreForFilm(id, g.getId());
                 } catch (NotFoundException e) {
-                    throw new ValidException("ID", "Жанр с ID " + g.getId() + " не найден");
+                    throw new NotFoundException(e.getMessage());
                 }
             });
             return genreService.getForFilm(id);

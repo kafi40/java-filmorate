@@ -18,7 +18,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> validException(final ValidException e) {
+    public Map<String, String> validException(final ValidationException e) {
         return Map.of(e.getParameter(), e.getReason());
     }
 }

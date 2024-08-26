@@ -8,18 +8,18 @@ import java.util.List;
 
 @Service
 public class RatingService {
-    private final RatingStorage repository;
+    private final RatingStorage ratingStorage;
 
-    public RatingService(RatingStorage repository) {
-        this.repository = repository;
+    public RatingService(RatingStorage ratingStorage) {
+        this.ratingStorage = ratingStorage;
     }
 
     public Rating get(Long id) {
-        return repository.get(id)
+        return ratingStorage.get(id)
                 .orElseThrow(() -> new NotFoundException("Рейтинга с ID = " + id + " не найдено"));
     }
 
     public List<Rating> getAll() {
-        return repository.getAll();
+        return ratingStorage.getAll();
     }
 }
