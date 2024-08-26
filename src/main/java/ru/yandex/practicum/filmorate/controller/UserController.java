@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.user.NewOrUpdateUser;
+import ru.yandex.practicum.filmorate.dto.user.RequestUserDto;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -31,12 +31,12 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createUser(@Valid @RequestBody NewOrUpdateUser request) {
+    public UserDto createUser(@Valid @RequestBody RequestUserDto request) {
         return service.save(request);
     }
 
     @PutMapping
-    public UserDto updateUser(@Valid @RequestBody NewOrUpdateUser request) {
+    public UserDto updateUser(@Valid @RequestBody RequestUserDto request) {
         return service.update(request);
     }
 

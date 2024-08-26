@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class NewOrUpdateFilm {
+public class RequestFilmDto {
     private Long id;
     @NotBlank(message = "Пустое название")
     private String name;

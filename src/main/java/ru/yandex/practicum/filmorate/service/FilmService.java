@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
-import ru.yandex.practicum.filmorate.dto.film.NewOrUpdateFilm;
+import ru.yandex.practicum.filmorate.dto.film.RequestFilmDto;
 import ru.yandex.practicum.filmorate.dto.genre.GenreFromFilmRequest;
 import ru.yandex.practicum.filmorate.exception.ElementNotExistsException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -50,7 +50,7 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
-    public FilmDto save(NewOrUpdateFilm request) {
+    public FilmDto save(RequestFilmDto request) {
         Film film = FilmMapper.mapToFilm(request);
         film.setMpa(getRating(request.getMpa().getId()));
         film = filmStorage.save(film);
@@ -58,7 +58,7 @@ public class FilmService {
         return FilmMapper.mapToFilmDto(film);
     }
 
-    public FilmDto update(NewOrUpdateFilm request) {
+    public FilmDto update(RequestFilmDto request) {
         if (request.getId() == null) {
             throw new ValidationException("ID","Должен быть указан ID");
         }

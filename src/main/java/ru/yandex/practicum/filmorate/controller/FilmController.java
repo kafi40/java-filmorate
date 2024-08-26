@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
-import ru.yandex.practicum.filmorate.dto.film.NewOrUpdateFilm;
+import ru.yandex.practicum.filmorate.dto.film.RequestFilmDto;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import java.util.Collection;
@@ -31,12 +31,12 @@ public class FilmController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FilmDto createFilm(@Valid @RequestBody NewOrUpdateFilm request) {
+    public FilmDto createFilm(@Valid @RequestBody RequestFilmDto request) {
         return service.save(request);
     }
 
     @PutMapping
-    public FilmDto updateFilm(@Valid @RequestBody NewOrUpdateFilm request) {
+    public FilmDto updateFilm(@Valid @RequestBody RequestFilmDto request) {
         return service.update(request);
     }
 

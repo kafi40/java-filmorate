@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.user.NewOrUpdateUser;
+import ru.yandex.practicum.filmorate.dto.user.RequestUserDto;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -37,7 +37,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public UserDto save(NewOrUpdateUser request) {
+    public UserDto save(RequestUserDto request) {
         if (request.getName() == null || request.getName().isBlank()) {
             request.setName(request.getLogin());
         }
@@ -46,7 +46,7 @@ public class UserService {
         return UserMapper.mapToUserDto(user);
     }
 
-    public UserDto update(NewOrUpdateUser request) {
+    public UserDto update(RequestUserDto request) {
         if (request.getId() == null) {
             throw new ValidationException("ID","Должен быть указан ID");
         }

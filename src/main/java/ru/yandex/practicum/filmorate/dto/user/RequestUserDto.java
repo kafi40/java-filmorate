@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Data
-public class NewOrUpdateUser {
+public class RequestUserDto {
     private Long id;
     @NotBlank(message = "Пустой E-mail")
     @Email(message = "Некорректный E-mail")
