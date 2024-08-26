@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.NewOrUpdateFilm;
 import ru.yandex.practicum.filmorate.dto.genre.GenreFromFilmRequest;
+import ru.yandex.practicum.filmorate.exception.ElementNotExistsException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
@@ -112,8 +113,8 @@ public class FilmService {
                 try {
                     genreService.get(g.getId());
                     filmStorage.addGenreForFilm(id, g.getId());
-                } catch (NotFoundException e) {
-                    throw new NotFoundException(e.getMessage());
+                } catch (RuntimeException e) {
+                    throw new ElementNotExistsException(e.getMessage());
                 }
             });
             return genreService.getForFilm(id);

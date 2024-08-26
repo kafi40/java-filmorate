@@ -18,6 +18,12 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> elementNotExistsException(final  ElementNotExistsException e) {
+        return Map.of("Error", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> validException(final ValidationException e) {
         return Map.of(e.getParameter(), e.getReason());
     }
