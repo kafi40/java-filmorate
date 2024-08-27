@@ -1,86 +1,125 @@
 package ru.yandex.practicum.filmorate.service;
 
-import jakarta.validation.ValidationException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.film.FilmDto;
+import ru.yandex.practicum.filmorate.dto.film.RequestFilmDto;
+import ru.yandex.practicum.filmorate.dto.genre.GenreFromFilmRequest;
+import ru.yandex.practicum.filmorate.exception.ElementNotExistsException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import java.util.List;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
-    private final InMemoryFilmStorage inMemoryStorage;
+    private final FilmStorage filmStorage;
     private final UserService userService;
+    private final GenreService genreService;
+    private final RatingService ratingService;
 
-    public FilmService(InMemoryFilmStorage inMemoryStorage, UserService userService) {
-        this.inMemoryStorage = inMemoryStorage;
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService,
+                       GenreService genreService, RatingService ratingService) {
+        this.filmStorage = filmStorage;
         this.userService = userService;
+        this.genreService = genreService;
+        this.ratingService = ratingService;
     }
 
-    public Film get(Long id) {
-        if (inMemoryStorage.get(id).isPresent()) {
-            return inMemoryStorage.get(id).get();
-        } else {
-            throw new NotFoundException("Объект с ID = " + id + " не найден");
+    public FilmDto get(Long id) {
+        return filmStorage.get(id)
+                .map(film -> {
+                    film.setMpa(ratingService.get(film.getMpa().getId()));
+                    film.setGenres(genreService.getForFilm(id));
+                    return film;
+                })
+                .map(FilmMapper::mapToFilmDto)
+                .orElseThrow(() -> new NotFoundException("Фильм с ID = " + id + " не найден"));
+    }
+
+    public List<FilmDto> getAll() {
+        return filmStorage.getAll()
+                .stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
+
+    public FilmDto save(RequestFilmDto request) {
+        Film film = FilmMapper.mapToFilm(request);
+        film.setMpa(getRating(request.getMpa().getId()));
+        film = filmStorage.save(film);
+        film.setGenres(saveGenre(film.getId(), request.getGenres()));
+        return FilmMapper.mapToFilmDto(film);
+    }
+
+    public FilmDto update(RequestFilmDto request) {
+        if (request.getId() == null) {
+            throw new ValidationException("ID","Должен быть указан ID");
         }
+        Film updatedFilm = filmStorage.get(request.getId())
+                .map(film -> FilmMapper.updateFilmFields(film, request))
+                .orElseThrow(() -> new NotFoundException("Фильм с ID " + request.getId() + " не найден"));
+        updatedFilm.setMpa(getRating(request.getMpa().getId()));
+        updatedFilm.setGenres(saveGenre(request.getId(), request.getGenres()));
+        updatedFilm = filmStorage.update(updatedFilm);
+        return FilmMapper.mapToFilmDto(updatedFilm);
     }
 
-    public List<Film> getAll() {
-        return inMemoryStorage.getAll();
-    }
-
-    public Film save(Film film) {
-        film.setId(getNextId());
-        return inMemoryStorage.save(film);
-    }
-
-    public Film update(Film film) {
-        if (film.getId() == null) {
-            throw new ValidationException("Должен быть указан ID");
-        }
-        if (inMemoryStorage.getStorage().containsKey(film.getId())) {
-            Film oldFilm = inMemoryStorage.getStorage().get(film.getId());
-            oldFilm.setName(film.getName());
-            oldFilm.setDescription(film.getDescription());
-            oldFilm.setReleaseDate(film.getReleaseDate());
-            oldFilm.setDuration(film.getDuration());
-            return inMemoryStorage.update(oldFilm);
-        }
-        throw new NotFoundException("Фильма с ID " + film.getId() + " не существует");
-    }
-
-    public Film delete(Long id) {
-        return inMemoryStorage.delete(id);
+    public boolean delete(Long id) {
+        return filmStorage.delete(id);
     }
 
     public boolean putLike(Long id, Long userId) {
         checkId(id);
         userService.checkId(userId);
-        return inMemoryStorage.putLike(id, userId);
+        return filmStorage.putLike(id, userId);
     }
 
     public boolean deleteLike(Long id, Long userId) {
         checkId(id);
         userService.checkId(userId);
-        return inMemoryStorage.deleteLike(id, userId);
+        return filmStorage.deleteLike(id, userId);
     }
 
-    public List<Film> getTopFilms(int size) {
-        return inMemoryStorage.getTopFilms(size);
-    }
-
-    protected long getNextId() {
-        long currentMaxId = inMemoryStorage.getStorage().keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    public List<FilmDto> getTopFilms(int size) {
+        return filmStorage.getTopFilms(size).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
     }
 
     public void checkId(Long id) {
-        if (inMemoryStorage.get(id).isEmpty()) {
+        if (filmStorage.get(id).isEmpty()) {
             throw new NotFoundException("Объекта с ID " + id + " не существует");
+        }
+    }
+
+    private Rating getRating(Long id) {
+        try {
+            return ratingService.get(id);
+        } catch (NotFoundException e) {
+            throw new ValidationException("ID", "Жанр с ID " + id + " не найден");
+        }
+    }
+
+    private Set<Genre> saveGenre(Long id, List<GenreFromFilmRequest> genres) {
+        if (genres != null) {
+            genres.forEach(g -> {
+                try {
+                    genreService.get(g.getId());
+                    filmStorage.addGenreForFilm(id, g.getId());
+                } catch (RuntimeException e) {
+                    throw new ElementNotExistsException(e.getMessage());
+                }
+            });
+            return genreService.getForFilm(id);
+        } else {
+            return new HashSet<>();
         }
     }
 }

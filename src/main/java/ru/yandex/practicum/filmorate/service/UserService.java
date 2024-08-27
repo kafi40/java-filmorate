@@ -1,73 +1,77 @@
 package ru.yandex.practicum.filmorate.service;
 
-import jakarta.validation.ValidationException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.user.RequestUserDto;
+import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
-    private final InMemoryUserStorage inMemoryStorage;
+    private final UserStorage userStorage;
 
-    public UserService(InMemoryUserStorage inMemoryStorage) {
-        this.inMemoryStorage = inMemoryStorage;
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+        this.userStorage = userStorage;
     }
 
-    public User get(Long id) {
-        if (inMemoryStorage.get(id).isPresent()) {
-            return inMemoryStorage.get(id).get();
-        } else {
-            throw new NotFoundException("Объект с ID = " + id + " не найден");
+    public UserDto get(Long id) {
+        return userStorage.get(id)
+                .map(UserMapper::mapToUserDto)
+                .orElseThrow(() -> new NotFoundException("Пользователь с ID = " + id + " не найден"));
+    }
+
+    public List<UserDto> getAll() {
+
+        return userStorage.getAll()
+                .stream()
+                .map(UserMapper::mapToUserDto)
+                .collect(Collectors.toList());
+    }
+
+    public UserDto save(RequestUserDto request) {
+        if (request.getName() == null || request.getName().isBlank()) {
+            request.setName(request.getLogin());
         }
+        User user = UserMapper.mapToUser(request);
+        user = userStorage.save(user);
+        return UserMapper.mapToUserDto(user);
     }
 
-    public List<User> getAll() {
-        return inMemoryStorage.getAll();
-    }
-
-    public User save(User user) {
-        user.setId(getNextId());
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
+    public UserDto update(RequestUserDto request) {
+        if (request.getId() == null) {
+            throw new ValidationException("ID","Должен быть указан ID");
         }
-        return inMemoryStorage.save(user);
+        User updatedUser = userStorage.get(request.getId())
+                .map(user -> UserMapper.updateUserFields(user, request))
+                .orElseThrow(() -> new NotFoundException("Пользователь с ID " + request.getId() + " не найден"));
+        updatedUser = userStorage.update(updatedUser);
+        return UserMapper.mapToUserDto(updatedUser);
     }
 
-    public User delete(Long id) {
-        return inMemoryStorage.delete(id);
+    public boolean delete(Long id) {
+        return userStorage.delete(id);
     }
 
-    public User update(User newEntity) {
-        if (newEntity.getId() == null) {
-            throw new ValidationException("Должен быть указан ID");
-        }
-        if (inMemoryStorage.getStorage().containsKey(newEntity.getId())) {
-            User oldUser = inMemoryStorage.getStorage().get(newEntity.getId());
-            oldUser.setLogin(newEntity.getLogin());
-            oldUser.setEmail(newEntity.getEmail());
-            oldUser.setBirthday(newEntity.getBirthday());
-            if (!(newEntity.getName() == null || newEntity.getName().isBlank())) {
-                oldUser.setName(newEntity.getName());
-            }
-            return inMemoryStorage.update(oldUser);
-        }
-        throw new NotFoundException("Пользователя с ID " + newEntity.getId() + " не существует");
-    }
-
-    public Set<User> getFriends(Long id) {
+    public Set<UserDto> getFriends(Long id) {
         checkId(id);
-        return inMemoryStorage.getFriends(id);
+        return userStorage.getFriends(id).stream()
+                .map(UserMapper::mapToUserDto)
+                .collect(Collectors.toSet());
     }
 
     public Set<User> getCommonFriends(Long id, Long otherId) {
         checkId(id);
         checkId(otherId);
-        return inMemoryStorage.getCommonFriends(id, otherId);
+        return userStorage.getCommonFriends(id, otherId);
     }
 
     public boolean addFriend(Long id, Long otherId) {
@@ -76,7 +80,10 @@ public class UserService {
         }
         checkId(id);
         checkId(otherId);
-       return inMemoryStorage.addFriend(id, otherId);
+        if (userStorage.isFriendRequest(id, otherId)) {
+            return userStorage.acceptRequest(id, otherId);
+        }
+       return userStorage.addFriend(id, otherId);
     }
 
     public boolean deleteFriend(Long id, Long otherId) {
@@ -85,20 +92,14 @@ public class UserService {
         }
         checkId(id);
         checkId(otherId);
-        return inMemoryStorage.deleteFriend(id, otherId);
-    }
-
-    protected long getNextId() {
-        long currentMaxId = inMemoryStorage.getStorage().keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        if (userStorage.isFriend(id, otherId)) {
+            return userStorage.removeRequest(id, otherId);
+        }
+        return userStorage.deleteFriend(id, otherId);
     }
 
     public void checkId(Long id) {
-        if (inMemoryStorage.get(id).isEmpty()) {
+        if (userStorage.get(id).isEmpty()) {
             throw new NotFoundException("Объекта с ID " + id + " не существует");
         }
     }

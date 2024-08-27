@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.user.RequestUserDto;
+import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -18,33 +20,33 @@ public class UserController {
     private final UserService service;
 
     @GetMapping
-    public Collection<User> getUsers() {
+    public Collection<UserDto> getUsers() {
         return service.getAll();
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable Long id) {
+    public UserDto getUser(@PathVariable Long id) {
         return service.get(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@Valid @RequestBody User user) {
-        return service.save(user);
+    public UserDto createUser(@Valid @RequestBody RequestUserDto request) {
+        return service.save(request);
     }
 
     @PutMapping
-    public User updateUser(@Valid @RequestBody User newUser) {
-        return service.update(newUser);
+    public UserDto updateUser(@Valid @RequestBody RequestUserDto request) {
+        return service.update(request);
     }
 
     @DeleteMapping("/{id}")
-    public User deleteUser(@PathVariable Long id) {
+    public boolean deleteUser(@PathVariable Long id) {
         return service.delete(id);
     }
 
     @GetMapping("/{id}/friends")
-    public Set<User> getFriends(@PathVariable Long id) {
+    public Set<UserDto> getFriends(@PathVariable Long id) {
         return service.getFriends(id);
     }
 
