@@ -5,11 +5,12 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.annotation.MinimalDate;
+
 import java.time.LocalDate;
 import java.util.Set;
 
 @Data
-public class Film  {
+public class Film {
     private Long id;
     @NotBlank(message = "Пустое название")
     private String name;
