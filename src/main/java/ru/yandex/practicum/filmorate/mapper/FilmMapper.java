@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmRequest;
+import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -19,9 +20,10 @@ public final class FilmMapper {
         filmDto.setDescription(film.getDescription());
         filmDto.setReleaseDate(film.getReleaseDate());
         filmDto.setDuration(film.getDuration());
-        filmDto.setMpa(film.getMpa());
-        List<Genre> genres = film.getGenres().stream()
+        filmDto.setMpa(RatingMapper.mapToMpaDto(film.getMpa()));
+        List<GenreDto> genres = film.getGenres().stream()
                 .sorted(Genre::compareTo)
+                .map(GenreMapper::mapToGenreDto)
                 .toList();
         filmDto.setGenres(genres);
         return filmDto;
