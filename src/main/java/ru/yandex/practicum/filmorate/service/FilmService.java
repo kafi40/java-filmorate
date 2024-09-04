@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
-import ru.yandex.practicum.filmorate.dto.film.RequestFilmDto;
-import ru.yandex.practicum.filmorate.dto.genre.GenreFromFilmRequest;
+import ru.yandex.practicum.filmorate.dto.film.FilmRequest;
+import ru.yandex.practicum.filmorate.dto.genre.GenreRequest;
 import ru.yandex.practicum.filmorate.exception.ElementNotExistsException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -50,7 +50,7 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
-    public FilmDto save(RequestFilmDto request) {
+    public FilmDto save(FilmRequest request) {
         Film film = FilmMapper.mapToFilm(request);
         film.setMpa(getRating(request.getMpa().getId()));
         film = filmStorage.save(film);
@@ -58,7 +58,7 @@ public class FilmService {
         return FilmMapper.mapToFilmDto(film);
     }
 
-    public FilmDto update(RequestFilmDto request) {
+    public FilmDto update(FilmRequest request) {
         if (request.getId() == null) {
             throw new ValidationException("ID","Должен быть указан ID");
         }
@@ -93,6 +93,14 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
+    public List<FilmDto> getCommonFilms(Long userId, Long friendId) {
+        userService.checkId(userId);
+        userService.checkId(friendId);
+        return filmStorage.findCommonFilms(userId, friendId).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
+
     public void checkId(Long id) {
         if (filmStorage.get(id).isEmpty()) {
             throw new NotFoundException("Объекта с ID " + id + " не существует");
@@ -107,7 +115,7 @@ public class FilmService {
         }
     }
 
-    private Set<Genre> saveGenre(Long id, List<GenreFromFilmRequest> genres) {
+    private Set<Genre> saveGenre(Long id, List<GenreRequest> genres) {
         if (genres != null) {
             genres.forEach(g -> {
                 try {

@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.yandex.practicum.filmorate.dto.user.RequestUserDto;
+import ru.yandex.practicum.filmorate.dto.user.UserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -18,7 +18,7 @@ public final class UserMapper {
         return userDto;
     }
 
-    public static User mapToUser(RequestUserDto request) {
+    public static User mapToUser(UserRequest request) {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setLogin(request.getLogin());
@@ -27,7 +27,7 @@ public final class UserMapper {
         return user;
     }
 
-    public static User updateUserFields(User user, RequestUserDto request) {
+    public static User updateUserFields(User user, UserRequest request) {
         user.setEmail(request.getEmail());
         user.setLogin(request.getLogin());
         user.setName(request.getName());

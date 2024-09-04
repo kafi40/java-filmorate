@@ -5,13 +5,13 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.annotation.MinimalDate;
-import ru.yandex.practicum.filmorate.dto.genre.GenreFromFilmRequest;
-import ru.yandex.practicum.filmorate.dto.rating.RatingFromFilmRequest;
+import ru.yandex.practicum.filmorate.dto.genre.GenreRequest;
+import ru.yandex.practicum.filmorate.dto.rating.RatingRequest;
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class RequestFilmDto {
+public class FilmRequest {
     private Long id;
     @NotBlank(message = "Пустое название")
     private String name;
@@ -21,6 +21,6 @@ public class RequestFilmDto {
     private LocalDate releaseDate;
     @Positive(message = "Отрицательное значение или ноль")
     private Integer duration;
-    private RatingFromFilmRequest mpa;
-    private List<GenreFromFilmRequest> genres;
+    private RatingRequest mpa;
+    private List<GenreRequest> genres;
 }
