@@ -3,6 +3,6 @@ package ru.yandex.practicum.filmorate.dto.genre;
 import lombok.Data;
 
 @Data
-public class GenreFromFilmRequest {
+public class GenreRequest {
     private Long id;
 }
