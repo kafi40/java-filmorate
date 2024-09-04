@@ -68,10 +68,12 @@ public class UserService {
                 .collect(Collectors.toSet());
     }
 
-    public Set<User> getCommonFriends(Long id, Long otherId) {
+    public Set<UserDto> getCommonFriends(Long id, Long otherId) {
         checkId(id);
         checkId(otherId);
-        return userStorage.getCommonFriends(id, otherId);
+        return userStorage.getCommonFriends(id, otherId).stream()
+                .map(UserMapper::mapToUserDto)
+                .collect(Collectors.toSet());
     }
 
     public boolean addFriend(Long id, Long otherId) {

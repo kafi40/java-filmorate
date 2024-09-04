@@ -27,7 +27,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             LIMIT ?
             """;
     private static final String ADD_LIKE =
-            """
+             """
              INSERT INTO "user_film_liked"("user_id", "film_id") VALUES (?, ?)
              """;
     private static final String DELETE_LIKE =
@@ -41,11 +41,14 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String FIND_COMMON_FILMS =
             """
             SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film"
+            LEFT JOIN "user_film_liked" ufl ON "film"."id" = ufl."film_id"
             WHERE "id" IN (
             SELECT "film_id" FROM "user_film_liked"
             WHERE "user_id" IN (?, ?)
             GROUP BY "film_id"
             HAVING COUNT(*) > 1)
+            GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
+            ORDER BY COUNT(*) DESC
             """;
 
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {

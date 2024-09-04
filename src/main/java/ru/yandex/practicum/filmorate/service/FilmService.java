@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.rating.RatingStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,22 +21,24 @@ import java.util.stream.Collectors;
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final RatingStorage ratingStorage;
     private final UserService userService;
     private final GenreService genreService;
-    private final RatingService ratingService;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService,
-                       GenreService genreService, RatingService ratingService) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                       @Qualifier("ratingDbStorage") RatingStorage ratingStorage,
+                       UserService userService,
+                       GenreService genreService) {
         this.filmStorage = filmStorage;
+        this.ratingStorage = ratingStorage;
         this.userService = userService;
         this.genreService = genreService;
-        this.ratingService = ratingService;
     }
 
     public FilmDto get(Long id) {
         return filmStorage.get(id)
                 .map(film -> {
-                    film.setMpa(ratingService.get(film.getMpa().getId()));
+                    film.setMpa(getRating(film.getMpa().getId()));
                     film.setGenres(genreService.getForFilm(id));
                     return film;
                 })
@@ -89,6 +92,7 @@ public class FilmService {
 
     public List<FilmDto> getTopFilms(int size) {
         return filmStorage.getTopFilms(size).stream()
+                .peek(film -> film.setMpa(getRating(film.getMpa().getId())))
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
@@ -108,11 +112,8 @@ public class FilmService {
     }
 
     private Rating getRating(Long id) {
-        try {
-            return ratingService.get(id);
-        } catch (NotFoundException e) {
-            throw new ValidationException("ID", "Жанр с ID " + id + " не найден");
-        }
+        return ratingStorage.get(id)
+                .orElseThrow(() -> new ValidationException("ID", "Жанр с ID " + id + " не найден"));
     }
 
     private Set<Genre> saveGenre(Long id, List<GenreRequest> genres) {

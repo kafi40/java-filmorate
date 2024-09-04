@@ -13,6 +13,7 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FilmMapper {
+
     public static FilmDto mapToFilmDto(Film film) {
         FilmDto filmDto = new FilmDto();
         filmDto.setId(film.getId());

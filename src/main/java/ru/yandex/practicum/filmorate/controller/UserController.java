@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.user.UserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
@@ -17,51 +16,51 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService service;
+    private final UserService userService;
 
     @GetMapping
     public Collection<UserDto> getUsers() {
-        return service.getAll();
+        return userService.getAll();
     }
 
     @GetMapping("/{id}")
     public UserDto getUser(@PathVariable Long id) {
-        return service.get(id);
+        return userService.get(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto createUser(@Valid @RequestBody UserRequest request) {
-        return service.save(request);
+        return userService.save(request);
     }
 
     @PutMapping
     public UserDto updateUser(@Valid @RequestBody UserRequest request) {
-        return service.update(request);
+        return userService.update(request);
     }
 
     @DeleteMapping("/{id}")
     public boolean deleteUser(@PathVariable Long id) {
-        return service.delete(id);
+        return userService.delete(id);
     }
 
     @GetMapping("/{id}/friends")
     public Set<UserDto> getFriends(@PathVariable Long id) {
-        return service.getFriends(id);
+        return userService.getFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public Set<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
-        return service.getCommonFriends(id, otherId);
+    public Set<UserDto> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
+        return userService.getCommonFriends(id, otherId);
     }
 
     @PutMapping("/{id}/friends/{friendsId}")
     public boolean addFriend(@PathVariable Long id, @PathVariable Long friendsId) {
-        return service.addFriend(id, friendsId);
+        return userService.addFriend(id, friendsId);
     }
 
     @DeleteMapping("/{id}/friends/{friendsId}")
     public boolean deleteFriend(@PathVariable Long id, @PathVariable Long friendsId) {
-        return service.deleteFriend(id, friendsId);
+        return userService.deleteFriend(id, friendsId);
     }
 }

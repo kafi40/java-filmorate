@@ -15,29 +15,54 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
             "VALUES (?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE user SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM user WHERE id = ?";
-    private static final String FIND_FRIENDS_QUERY = "SELECT * FROM user WHERE id IN " +
-            "(SELECT friend_id FROM user_friend " +
-            "WHERE user_id = ? " +
-            "UNION ALL " +
-            "SELECT user_id FROM user_friend " +
-            "WHERE friend_id = ? AND is_accept = true)";
-    private static final String FIND_COMMON_FRIENDS = "SELECT * FROM user WHERE id IN " +
-            "(SELECT * FROM" +
-            "(SELECT friend_id  FROM user_friend " +
-            "WHERE user_id = ? OR user_id = ? " +
-            "UNION ALL " +
-            "SELECT user_id FROM user_friend " +
-            "WHERE (friend_id = ? OR friend_id = ?) AND is_accept = true) " +
-            "GROUP BY friend_id " +
-            "HAVING COUNT(*) > 1);";
+    private static final String FIND_FRIENDS_QUERY =
+            """
+            SELECT * FROM "user" WHERE "id" IN (
+            SELECT "friend_id" FROM "user_friend"
+            WHERE "user_id" = ?
+            UNION ALL
+            SELECT "user_id" FROM "user_friend"
+            WHERE "friend_id" = ? AND "is_accept" = true)
+            """;
 
-    private static final String ADD_FRIEND_QUERY = "INSERT INTO user_friend(user_id, friend_id, is_accept)" +
-            "VALUES (?, ?, false)";
-    private static final String DELETE_FRIEND_QUERY = "DELETE FROM user_friend WHERE user_id = ? AND friend_id = ?";
-    private static final String IS_FRIEND_REQUEST = "SELECT * FROM user_friend WHERE friend_id = ? AND user_id = ? AND is_accept = false";
-    private static final String ACCEPT_REQUEST = "UPDATE user_friend SET is_accept = true WHERE user_id = ? AND friend_id = ?";
-    private static final String IS_FRIEND = "SELECT * FROM user_friend WHERE friend_id = ? AND user_id = ? AND is_accept = true";
-    private static final String REMOVE_REQUEST = "UPDATE user_friend SET is_accept = false WHERE friend_id = ? AND user_id = ?";
+    private static final String FIND_COMMON_FRIENDS =
+            """
+            SELECT * FROM "user" WHERE "id" IN (
+            SELECT * FROM (
+            SELECT "friend_id"  FROM "user_friend"
+            WHERE "user_id" = ? OR "user_id" = ?
+            UNION ALL
+            SELECT "user_id" FROM "user_friend"
+            WHERE ("friend_id" = ? OR "friend_id" = ?) AND "is_accept" = true) as cf
+            GROUP BY "friend_id"
+            HAVING COUNT(*) > 1)
+            """;
+
+    private static final String ADD_FRIEND_QUERY =
+            """
+            INSERT INTO "user_friend"("user_id", "friend_id", "is_accept")
+            VALUES (?, ?, false)
+            """;
+    private static final String DELETE_FRIEND_QUERY =
+            """
+            DELETE FROM "user_friend" WHERE "user_id" = ? AND "friend_id" = ?
+            """;
+    private static final String IS_FRIEND_REQUEST =
+            """
+            SELECT * FROM "user_friend" WHERE "friend_id" = ? AND "user_id" = ? AND "is_accept" = false
+            """;
+    private static final String ACCEPT_REQUEST =
+            """
+            UPDATE "user_friend" SET "is_accept" = true WHERE "user_id" = ? AND "friend_id" = ?
+            """;
+    private static final String IS_FRIEND =
+            """
+            SELECT * FROM "user_friend" WHERE "friend_id" = ? AND "user_id" = ? AND "is_accept" = true
+            """;
+    private static final String REMOVE_REQUEST =
+            """
+            UPDATE "user_friend" SET "is_accept" = false WHERE "friend_id" = ? AND "user_id" = ?
+            """;
 
     public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
