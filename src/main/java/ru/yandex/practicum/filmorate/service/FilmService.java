@@ -90,8 +90,13 @@ public class FilmService {
         return filmStorage.deleteLike(id, userId);
     }
 
-    public List<FilmDto> getTopFilms(int size) {
-        return filmStorage.getTopFilms(size).stream()
+    public List<FilmDto> getTopFilms(int size, Long genreId, Integer year) {
+
+        if (genreId != null) {
+            genreService.checkId(genreId);
+        }
+
+        return filmStorage.getTopFilms(size, genreId, year).stream()
                 .peek(film -> film.setMpa(getRating(film.getMpa().getId())))
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
@@ -101,28 +106,6 @@ public class FilmService {
         userService.checkId(userId);
         userService.checkId(friendId);
         return filmStorage.findCommonFilms(userId, friendId).stream()
-                .map(FilmMapper::mapToFilmDto)
-                .collect(Collectors.toList());
-    }
-
-    public List<FilmDto> getTopFilmsByYearAndGenre(int count, Long genreId, int year) {
-        genreService.checkId(genreId);
-
-        return filmStorage.getTopFilmsByYearAndGenre(count, genreId, year).stream()
-                .map(FilmMapper::mapToFilmDto)
-                .collect(Collectors.toList());
-    }
-
-    public List<FilmDto> getTopFilmsByYear(int count, int year) {
-        return filmStorage.getTopFilmsByYear(count, year).stream()
-                .map(FilmMapper::mapToFilmDto)
-                .collect(Collectors.toList());
-    }
-
-    public List<FilmDto> getTopFilmsByGenre(int count, Long genreId) {
-        genreService.checkId(genreId);
-
-        return filmStorage.getTopFilmsByGenre(count, genreId).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }

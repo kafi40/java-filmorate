@@ -20,13 +20,7 @@ public interface FilmStorage {
 
     boolean deleteLike(Long id, Long userId);
 
-    List<Film> getTopFilms(int size);
-
-    List<Film> getTopFilmsByYearAndGenre(int count, Long genreId, int year);
-
-    List<Film> getTopFilmsByYear(int count, int year);
-
-    List<Film> getTopFilmsByGenre(int count, Long genreId);
+    List<Film> getTopFilms(int size, Long genreId, Integer year);
 
     void addGenreForFilm(Long id, Long genreId);
 
