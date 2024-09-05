@@ -48,7 +48,7 @@ public class UserService {
 
     public UserDto update(UserRequest request) {
         if (request.getId() == null) {
-            throw new ValidationException("ID","Должен быть указан ID");
+            throw new ValidationException("ID", "Должен быть указан ID");
         }
         User updatedUser = userStorage.get(request.getId())
                 .map(user -> UserMapper.updateUserFields(user, request))
@@ -85,7 +85,7 @@ public class UserService {
         if (userStorage.isFriendRequest(id, otherId)) {
             return userStorage.acceptRequest(id, otherId);
         }
-       return userStorage.addFriend(id, otherId);
+        return userStorage.addFriend(id, otherId);
     }
 
     public boolean deleteFriend(Long id, Long otherId) {

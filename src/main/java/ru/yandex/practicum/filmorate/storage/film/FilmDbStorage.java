@@ -150,7 +150,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
         }
     }
 
-
     @Override
     public void addGenreForFilm(Long id, Long genreId) {
         jdbc.update(ADD_GENRE_FOR_FILM, id, genreId);

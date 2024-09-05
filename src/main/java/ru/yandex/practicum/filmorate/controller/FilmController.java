@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.dto.film.FilmRequest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
@@ -49,7 +50,8 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<FilmDto> getFilmsTop(@RequestParam(defaultValue = "10", name = "count") int count,
+
+    public List<FilmDto> getFilmsTop(@RequestParam(defaultValue = "10") int count,
                                      @RequestParam(required = false) Long genreId,
                                      @RequestParam(required = false) Integer year) {
         if (count < 1) {
