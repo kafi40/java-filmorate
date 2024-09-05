@@ -85,6 +85,25 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
             ORDER BY COUNT(*) DESC
             """;
+    private static final String FIND_FILMS_FOR_DIRECTOR_SORT_BY_YEAR_QUERY = """
+            SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
+            FROM "film" AS f
+            LEFT JOIN "film_director" AS fd ON f.id = fd.film_id
+            WHERE fd.director_id = ?
+            GROUP BY id, name, description, release_date, duration, rating_id
+            ORDER BY f.release_date
+            """;
+    private static final String FIND_FILMS_FOR_DIRECTOR_SORT_BY_LIKES_QUERY = """
+            SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
+            FROM "film" AS f
+            LEFT JOIN "user_film_liked" ufl ON f.id = ufl.film_id
+            JOIN "film_director" fd ON f.id = fd.film_id
+            WHERE fd.director_id = ?
+            GROUP BY id, name, description, release_date, duration, rating_id
+            ORDER BY COUNT(ufl.user_id) DESC;
+            """;
+    private static final String ADD_DIRECTOR_FOR_FILM = "INSERT INTO film_director(film_id, director_id) VALUES (?, ?)";
+
 
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -157,6 +176,16 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     }
 
     @Override
+    public List<Film> getDirectorsFilmSortByYear(Long id) {
+        return jdbc.query(FIND_FILMS_FOR_DIRECTOR_SORT_BY_YEAR_QUERY, mapper, id);
+    }
+
+    @Override
+    public List<Film> getDirectorsFilmSortByLikes(Long id) {
+        return jdbc.query(FIND_FILMS_FOR_DIRECTOR_SORT_BY_LIKES_QUERY, mapper, id);
+    }
+
+    @Override
     public void addGenreForFilm(Long id, Long genreId) {
         jdbc.update(ADD_GENRE_FOR_FILM, id, genreId);
     }
@@ -164,5 +193,10 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public List<Film> findCommonFilms(Long userId, Long friendId) {
         return jdbc.query(FIND_COMMON_FILMS, mapper, userId, friendId);
+    }
+
+    @Override
+    public void addDirectorForFilm(Long id, Long directorId) {
+        jdbc.update(ADD_DIRECTOR_FOR_FILM, id, directorId);
     }
 }

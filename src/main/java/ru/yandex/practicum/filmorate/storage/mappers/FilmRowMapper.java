@@ -3,9 +3,11 @@ package ru.yandex.practicum.filmorate.storage.mappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
 import java.sql.ResultSet;
@@ -16,6 +18,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class FilmRowMapper implements RowMapper<Film> {
     private final GenreStorage genreRepository;
+    private final DirectorStorage directorRepository;
+
+
 
     @Override
     public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -32,6 +37,9 @@ public class FilmRowMapper implements RowMapper<Film> {
 
         Set<Genre> genres = genreRepository.getForFilm(film.getId());
         film.setGenres(genres);
+
+        Set<Director> directors = directorRepository.getForFilm(film.getId());
+        film.setDirectors(directors);
         return film;
     }
 }

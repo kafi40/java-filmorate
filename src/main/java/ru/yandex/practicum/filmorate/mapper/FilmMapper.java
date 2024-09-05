@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmRequest;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
+import ru.yandex.practicum.filmorate.dto.film.RequestFilmDto;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -13,7 +15,6 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FilmMapper {
-
     public static FilmDto mapToFilmDto(Film film) {
         FilmDto filmDto = new FilmDto();
         filmDto.setId(film.getId());
@@ -27,6 +28,10 @@ public final class FilmMapper {
                 .map(GenreMapper::mapToGenreDto)
                 .toList();
         filmDto.setGenres(genres);
+        List<Director> directors = film.getDirectors().stream()
+                .sorted(Director::compareTo)
+                .toList();
+        filmDto.setDirectors(directors);
         return filmDto;
     }
 
