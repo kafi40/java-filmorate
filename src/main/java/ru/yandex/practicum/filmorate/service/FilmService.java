@@ -91,11 +91,9 @@ public class FilmService {
     }
 
     public List<FilmDto> getTopFilms(int size, Long genreId, Integer year) {
-
         if (genreId != null) {
             genreService.checkId(genreId);
         }
-
         return filmStorage.getTopFilms(size, genreId, year).stream()
                 .peek(film -> film.setMpa(getRating(film.getMpa().getId())))
                 .map(FilmMapper::mapToFilmDto)
