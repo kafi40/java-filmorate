@@ -48,14 +48,14 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<FilmDto> getFilmsTop(@RequestParam(defaultValue = "10", name = "count") int size,
+    public List<FilmDto> getFilmsTop(@RequestParam(defaultValue = "10", name = "count") int count,
                                      @RequestParam(required = false) Long genreId,
                                      @RequestParam(required = false) Integer year) {
-        if (size < 1) {
-            throw new ValidationException("size", "Некорректный размер выборки. Размер должен быть больше нуля");
+        if (count < 1) {
+            throw new ValidationException("count", "Некорректный размер выборки. Размер должен быть больше нуля");
         }
 
-        return filmService.getTopFilms(size, genreId, year);
+        return filmService.getTopFilms(count, genreId, year);
 
     }
 

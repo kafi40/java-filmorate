@@ -21,11 +21,11 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String FIND_TOP_FILMS =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film"
-                                                         LEFT JOIN "user_film_liked" ufl ON "film"."id" = ufl."film_id"
-                                                         GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
-                                                         ORDER BY COUNT(*) DESC
-                                                         LIMIT ?
-                    """;
+                    LEFT JOIN "user_film_liked" ufl ON "film"."id" = ufl."film_id"
+                    GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
+                    ORDER BY COUNT(*) DESC
+                    LIMIT ?
+            """;
     private static final String FIND_TOP_FILMS_BY_YEAR_AND_GENRE =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film" AS f
@@ -78,7 +78,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     HAVING COUNT(*) > 1)
                     GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
                     ORDER BY COUNT(*) DESC
-                    """;
+            """;
 
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -138,15 +138,15 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     }
 
     @Override
-    public List<Film> getTopFilms(int size, Long genreId, Integer year) {
+    public List<Film> getTopFilms(int count, Long genreId, Integer year) {
         if (genreId == null && year == null) {
-            return jdbc.query(FIND_TOP_FILMS, mapper, size);
+            return jdbc.query(FIND_TOP_FILMS, mapper, count);
         } else if (genreId != null && year == null) {
-            return jdbc.query(FIND_TOP_FILMS_BY_GENRE, mapper, genreId, size);
+            return jdbc.query(FIND_TOP_FILMS_BY_GENRE, mapper, genreId, count);
         } else if (genreId == null) {
-            return jdbc.query(FIND_TOP_FILMS_BY_YEAR, mapper, year, size);
+            return jdbc.query(FIND_TOP_FILMS_BY_YEAR, mapper, year, count);
         } else {
-            return jdbc.query(FIND_TOP_FILMS_BY_YEAR_AND_GENRE, mapper, year, genreId, size);
+            return jdbc.query(FIND_TOP_FILMS_BY_YEAR_AND_GENRE, mapper, year, genreId, count);
         }
     }
 

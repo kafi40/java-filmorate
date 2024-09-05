@@ -90,11 +90,11 @@ public class FilmService {
         return filmStorage.deleteLike(id, userId);
     }
 
-    public List<FilmDto> getTopFilms(int size, Long genreId, Integer year) {
+    public List<FilmDto> getTopFilms(int count, Long genreId, Integer year) {
         if (genreId != null) {
             genreService.checkId(genreId);
         }
-        return filmStorage.getTopFilms(size, genreId, year).stream()
+        return filmStorage.getTopFilms(count, genreId, year).stream()
                 .peek(film -> film.setMpa(getRating(film.getMpa().getId())))
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
