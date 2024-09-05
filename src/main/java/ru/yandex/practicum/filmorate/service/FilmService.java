@@ -37,7 +37,6 @@ public class FilmService {
         this.ratingStorage = ratingStorage;
         this.userService = userService;
         this.genreService = genreService;
-        this.ratingService = ratingService;
         this.directorService = directorService;
     }
 
