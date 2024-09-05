@@ -55,7 +55,7 @@ public class FilmController {
         if (count < 1) {
             throw new ValidationException("count", "Некорректный размер выборки. Размер должен быть больше нуля");
         }
-        if (year != null && ( year < 1895 || year > LocalDate.now().getYear())) {
+        if (year != null && (year < 1895 || year > LocalDate.now().getYear())) {
             throw new ValidationException("year", "Некорректный год. Должен быть в пределах 1895 до нашего времени");
         }
         return filmService.getTopFilms(count, genreId, year);
