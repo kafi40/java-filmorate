@@ -28,7 +28,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     """;
     private static final String FIND_TOP_FILMS_BY_YEAR_AND_GENRE =
             """
-                    SELECT * FROM "film" AS f
+                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film" AS f
                     LEFT JOIN "user_film_liked" ufl ON f.ID = ufl.FILM_ID
                     WHERE EXTRACT(YEAR FROM f.RELEASE_DATE) = ? AND f.ID IN
                     (SELECT FILM_ID FROM "film_genre" AS fg WHERE fg.GENRE_ID = ?)
@@ -38,7 +38,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     """;
     private static final String FIND_TOP_FILMS_BY_YEAR =
             """
-                    SELECT * FROM "film" AS f
+                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film" AS f
                     LEFT JOIN "user_film_liked" ufl ON f.ID = ufl.FILM_ID
                     WHERE EXTRACT(YEAR FROM f.RELEASE_DATE) = ?
                     GROUP BY f.ID
@@ -47,7 +47,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     """;
     private static final String FIND_TOP_FILMS_BY_GENRE =
             """
-                    SELECT * FROM "film" AS f
+                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film" AS f
                     LEFT JOIN "user_film_liked" ufl ON f.ID = ufl.FILM_ID
                     WHERE f.ID IN
                     (SELECT FILM_ID FROM "film_genre" AS fg WHERE fg.GENRE_ID = ?)
