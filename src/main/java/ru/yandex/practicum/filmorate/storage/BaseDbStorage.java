@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 public class BaseDbStorage<T> {
-    protected  final JdbcTemplate jdbc;
+    protected final JdbcTemplate jdbc;
     protected final RowMapper<T> mapper;
 
     protected Optional<T> findOne(String query, Object... params) {

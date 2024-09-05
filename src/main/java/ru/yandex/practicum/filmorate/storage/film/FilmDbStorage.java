@@ -27,9 +27,9 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             LIMIT ?
             """;
     private static final String ADD_LIKE =
-             """
-             INSERT INTO "user_film_liked"("user_id", "film_id") VALUES (?, ?)
-             """;
+            """
+            INSERT INTO "user_film_liked"("user_id", "film_id") VALUES (?, ?)
+            """;
     private static final String DELETE_LIKE =
             """
             DELETE FROM "user_film_liked" WHERE "user_id" = ? AND "film_id" = ?
@@ -109,8 +109,8 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     }
 
     @Override
-    public List<Film> getTopFilms(int size) {
-        return jdbc.query(FIND_TOP_FILMS, mapper, size);
+    public List<Film> getTopFilms(int count) {
+        return jdbc.query(FIND_TOP_FILMS, mapper, count);
     }
 
     @Override

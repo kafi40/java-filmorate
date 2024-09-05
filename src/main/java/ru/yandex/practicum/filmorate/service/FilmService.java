@@ -63,7 +63,7 @@ public class FilmService {
 
     public FilmDto update(FilmRequest request) {
         if (request.getId() == null) {
-            throw new ValidationException("ID","Должен быть указан ID");
+            throw new ValidationException("ID", "Должен быть указан ID");
         }
         Film updatedFilm = filmStorage.get(request.getId())
                 .map(film -> FilmMapper.updateFilmFields(film, request))
@@ -90,8 +90,8 @@ public class FilmService {
         return filmStorage.deleteLike(id, userId);
     }
 
-    public List<FilmDto> getTopFilms(int size) {
-        return filmStorage.getTopFilms(size).stream()
+    public List<FilmDto> getTopFilms(int count) {
+        return filmStorage.getTopFilms(count).stream()
                 .peek(film -> film.setMpa(getRating(film.getMpa().getId())))
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());

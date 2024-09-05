@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmRequest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -46,11 +47,11 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<FilmDto> getFilmsTop(@RequestParam(defaultValue = "10") int size) {
-        if (size < 1) {
-            throw new ValidationException("size", "Некорректный размер выборки. Размер должен быть больше нуля");
+    public List<FilmDto> getFilmsTop(@RequestParam(defaultValue = "10") int count) {
+        if (count < 1) {
+            throw new ValidationException("count", "Некорректный размер выборки. Размер должен быть больше нуля");
         }
-        return filmService.getTopFilms(size);
+        return filmService.getTopFilms(count);
     }
 
     @PutMapping("/{id}/like/{userId}")
