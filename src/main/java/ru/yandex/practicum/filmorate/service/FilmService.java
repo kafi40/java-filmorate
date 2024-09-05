@@ -63,7 +63,7 @@ public class FilmService {
 
     public FilmDto update(FilmRequest request) {
         if (request.getId() == null) {
-            throw new ValidationException("ID","Должен быть указан ID");
+            throw new ValidationException("ID", "Должен быть указан ID");
         }
         Film updatedFilm = filmStorage.get(request.getId())
                 .map(film -> FilmMapper.updateFilmFields(film, request))
@@ -101,6 +101,28 @@ public class FilmService {
         userService.checkId(userId);
         userService.checkId(friendId);
         return filmStorage.findCommonFilms(userId, friendId).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<FilmDto> getTopFilmsByYearAndGenre(int count, Long genreId, int year) {
+        genreService.checkId(genreId);
+
+        return filmStorage.getTopFilmsByYearAndGenre(count, genreId, year).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<FilmDto> getTopFilmsByYear(int count, int year) {
+        return filmStorage.getTopFilmsByYear(count, year).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<FilmDto> getTopFilmsByGenre(int count, Long genreId) {
+        genreService.checkId(genreId);
+
+        return filmStorage.getTopFilmsByGenre(count, genreId).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }

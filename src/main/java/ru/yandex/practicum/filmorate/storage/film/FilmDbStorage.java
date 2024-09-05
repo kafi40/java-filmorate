@@ -21,11 +21,40 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String FIND_TOP_FILMS =
             """
             SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film"
-            LEFT JOIN "user_film_liked" ufl ON "film"."id" = ufl."film_id"
-            GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
-            ORDER BY COUNT(*) DESC
-            LIMIT ?
+                                                 LEFT JOIN "user_film_liked" ufl ON "film"."id" = ufl."film_id"
+                                                 GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
+                                                 ORDER BY COUNT(*) DESC
+                                                 LIMIT ?
             """;
+    private static final String FIND_TOP_FILMS_BY_YEAR_AND_GENRE =
+            """
+                    SELECT * FROM "film" AS f
+                    LEFT JOIN "user_film_liked" ufl ON f.ID = ufl.FILM_ID
+                    WHERE EXTRACT(YEAR FROM f.RELEASE_DATE) = ? AND f.ID IN
+                    (SELECT FILM_ID FROM "film_genre" AS fg WHERE fg.GENRE_ID = ?)
+                    GROUP BY f.ID
+                    ORDER BY COUNT(*) DESC
+                    LIMIT ?;
+                    """;
+    private static final String FIND_TOP_FILMS_BY_YEAR =
+            """
+                    SELECT * FROM "film" AS f
+                    LEFT JOIN "user_film_liked" ufl ON f.ID = ufl.FILM_ID
+                    WHERE EXTRACT(YEAR FROM f.RELEASE_DATE) = ?
+                    GROUP BY f.ID
+                    ORDER BY COUNT(*) DESC
+                    LIMIT ?;
+                    """;
+    private static final String FIND_TOP_FILMS_BY_GENRE =
+            """
+                    SELECT * FROM "film" AS f
+                    LEFT JOIN "user_film_liked" ufl ON f.ID = ufl.FILM_ID
+                    WHERE f.ID IN
+                    (SELECT FILM_ID FROM "film_genre" AS fg WHERE fg.GENRE_ID = ?)
+                    GROUP BY f.ID
+                    ORDER BY COUNT(*) DESC
+                    LIMIT ?;
+                    """;
     private static final String ADD_LIKE =
              """
              INSERT INTO "user_film_liked"("user_id", "film_id") VALUES (?, ?)
@@ -112,6 +141,22 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     public List<Film> getTopFilms(int size) {
         return jdbc.query(FIND_TOP_FILMS, mapper, size);
     }
+
+    @Override
+    public List<Film> getTopFilmsByYear(int count, int year) {
+        return jdbc.query(FIND_TOP_FILMS_BY_YEAR, mapper, year, count);
+    }
+
+    @Override
+    public List<Film> getTopFilmsByGenre(int count, Long genreId) {
+        return jdbc.query(FIND_TOP_FILMS_BY_GENRE, mapper, genreId, count);
+    }
+
+    @Override
+    public List<Film> getTopFilmsByYearAndGenre(int count, Long genreId, int year) {
+        return jdbc.query(FIND_TOP_FILMS_BY_YEAR_AND_GENRE, mapper, year, genreId, count);
+    }
+
 
     @Override
     public void addGenreForFilm(Long id, Long genreId) {

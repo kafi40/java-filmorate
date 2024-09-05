@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmRequest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class FilmController {
         return filmService.get(id);
     }
 
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public FilmDto createFilm(@Valid @RequestBody FilmRequest request) {
@@ -46,12 +48,23 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<FilmDto> getFilmsTop(@RequestParam(defaultValue = "10") int size) {
+    public List<FilmDto> getFilmsTop(@RequestParam(defaultValue = "10", name = "count") int size,
+                                     @RequestParam(required = false) Long genreId,
+                                     @RequestParam(required = false) Integer year) {
         if (size < 1) {
             throw new ValidationException("size", "Некорректный размер выборки. Размер должен быть больше нуля");
         }
-        return filmService.getTopFilms(size);
+        if (genreId == null && year == null) {
+            return filmService.getTopFilms(size);
+        } else if (genreId == null) {
+            return filmService.getTopFilmsByYear(size, year);
+        } else if (year == null) {
+            return filmService.getTopFilmsByGenre(size, genreId);
+        } else {
+            return filmService.getTopFilmsByYearAndGenre(size, genreId, year);
+        }
     }
+
 
     @PutMapping("/{id}/like/{userId}")
     public boolean putLike(@PathVariable Long id, @PathVariable Long userId) {
