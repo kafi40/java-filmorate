@@ -5,6 +5,8 @@ DROP TABLE IF EXISTS "rating" CASCADE;
 DROP TABLE IF EXISTS "user" CASCADE;
 DROP TABLE IF EXISTS "user_film_liked" CASCADE;
 DROP TABLE IF EXISTS "user_friend" CASCADE;
+DROP TABLE IF EXISTS "reviews" CASCADE;
+DROP TABLE IF EXISTS "user_review_scored" CASCADE;
 
 CREATE TABLE IF NOT EXISTS "genre"
 (
@@ -73,4 +75,9 @@ CREATE TABLE IF NOT EXISTS "user_review_scored"
         ON DELETE CASCADE ON UPDATE CASCADE,
     score INTEGER NOT NULL
 );
+
+ALTER TABLE "user_review_scored"
+ADD CONSTRAINT "uq_user_review"
+    UNIQUE ("review_id", "user_id");
+
 

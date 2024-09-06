@@ -1,17 +1,21 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.rating.RatingDto;
+import ru.yandex.practicum.filmorate.controller.model.rating.RatingDto;
 import ru.yandex.practicum.filmorate.service.RatingService;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/mpa")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RatingController {
-    private final RatingService ratingService;
+    RatingService ratingService;
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
