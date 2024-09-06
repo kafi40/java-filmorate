@@ -1,6 +1,6 @@
 SET SCHEMA "public";
 
-INSERT INTO "rating" ("name")
+INSERT INTO "ratings" ("name")
 VALUES
     ('G'),
     ('PG'),
@@ -8,7 +8,7 @@ VALUES
     ('R'),
     ('NC-17');
 
-INSERT INTO "genre" ("name")
+INSERT INTO "genres" ("name")
 VALUES
     ('Комедия'),
     ('Драма'),
@@ -17,7 +17,7 @@ VALUES
     ('Документальный'),
     ('Боевик');
 
-INSERT INTO "film" ("name", "description", "release_date", "duration", "rating_id")
+INSERT INTO "films" ("name", "description", "release_date", "duration", "rating_id")
 VALUES
     ('Пушистые кошаки', 'Отряд пушистиков спасает мир', '2024-10-10', '90', '2'),
     ('Звездные баталии', 'Пародия на звездные войны', '2025-09-28', '72', '4'),
@@ -29,7 +29,7 @@ VALUES
     ('Астрал 666', 'Очередной фильм франшизы, когда это уже закончится', '2099-02-13', '130', '5'),
     ('Отомстители', 'Команда супергероев с земли спасают всю вселенную с помощью паутины', '2025-06-10', '144', '3');
 
-INSERT INTO "film_genre" ("film_id", "genre_id")
+INSERT INTO "film_genres" ("film_id", "genre_id")
 VALUES
     ('1', '1'),
     ('1', '1'),
@@ -46,7 +46,7 @@ VALUES
     ('9', '4'),
     ('9', '2');
 
-INSERT INTO "user" ("email", "login", "name", "birthday")
+INSERT INTO "users" ("email", "login", "name", "birthday")
 VALUES
     ('fil@ya.ru','fil','Filipp','1995-05-06'),
     ('evgesha@ya.ru','evgesha','Евгения','2000-02-09'),

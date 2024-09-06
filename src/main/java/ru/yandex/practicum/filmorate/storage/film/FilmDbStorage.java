@@ -11,20 +11,26 @@ import java.util.Optional;
 
 @Repository
 public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM film WHERE id = ?";
-    private static final String FIND_ALL_QUERY = "SELECT * FROM film";
-    private static final String INSERT_QUERY = "INSERT INTO film(name, description, release_date, duration, rating_id)" +
-                                               "VALUES (?, ?, ?, ?, ?)";
-    private static final String UPDATE_QUERY = "UPDATE film SET name = ?, description = ?, release_date = ?, duration = ?, " +
-                                               "rating_id = ? WHERE id = ?";
-    private static final String DELETE_QUERY = "DELETE FROM film WHERE id = ?";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM films WHERE id = ?";
+    private static final String FIND_ALL_QUERY = "SELECT * FROM films";
+    private static final String INSERT_QUERY =
+            """
+            INSERT INTO films(name, description, release_date, duration, rating_id)
+                                               VALUES (?, ?, ?, ?, ?)
+            """;
+    private static final String UPDATE_QUERY =
+            """
+            UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?,
+                                               rating_id = ? WHERE id = ?
+            """;
+    private static final String DELETE_QUERY = "DELETE FROM films WHERE id = ?";
     private static final String FIND_TOP_FILMS =
             """
-                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film"
-                    LEFT JOIN "user_film_liked" ufl ON "film"."id" = ufl."film_id"
-                    GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
-                    ORDER BY COUNT(*) DESC
-                    LIMIT ?
+            SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" f
+            LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
+            GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
+            ORDER BY COUNT(*) DESC
+            LIMIT ?
             """;
     private static final String FIND_TOP_FILMS_BY_YEAR_AND_GENRE =
             """
@@ -57,27 +63,27 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     """;
     private static final String ADD_LIKE =
             """
-                    INSERT INTO "user_film_liked"("user_id", "film_id") VALUES (?, ?)
-                    """;
+            INSERT INTO "user_films_liked"("user_id", "film_id") VALUES (?, ?)
+            """;
     private static final String DELETE_LIKE =
             """
-                    DELETE FROM "user_film_liked" WHERE "user_id" = ? AND "film_id" = ?
-                    """;
+            DELETE FROM "user_films_liked" WHERE "user_id" = ? AND "film_id" = ?
+            """;
     private static final String ADD_GENRE_FOR_FILM =
             """
-                    INSERT INTO "film_genre"("film_id", "genre_id") VALUES (?, ?)
+                    INSERT INTO "film_genres"("film_id", "genre_id") VALUES (?, ?)
                     """;
     private static final String FIND_COMMON_FILMS =
             """
-                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film"
-                    LEFT JOIN "user_film_liked" ufl ON "film"."id" = ufl."film_id"
-                    WHERE "id" IN (
-                    SELECT "film_id" FROM "user_film_liked"
-                    WHERE "user_id" IN (?, ?)
-                    GROUP BY "film_id"
-                    HAVING COUNT(*) > 1)
-                    GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
-                    ORDER BY COUNT(*) DESC
+            SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" f
+            LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
+            WHERE f."id" IN (
+            SELECT "film_id" FROM "user_films_liked"
+            WHERE "user_id" IN (?, ?)
+            GROUP BY "film_id"
+            HAVING COUNT(*) > 1)
+            GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
+            ORDER BY COUNT(*) DESC
             """;
 
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {

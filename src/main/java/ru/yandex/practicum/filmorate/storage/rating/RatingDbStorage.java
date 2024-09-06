@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @Repository
 public class RatingDbStorage extends BaseDbStorage<Rating> implements RatingStorage {
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM rating WHERE id = ?";
-    private static final String FIND_ALL_QUERY = "SELECT * FROM rating";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM ratings WHERE id = ?";
+    private static final String FIND_ALL_QUERY = "SELECT * FROM ratings";
 
     public RatingDbStorage(JdbcTemplate jdbc, RowMapper<Rating> mapper) {
         super(jdbc, mapper);
