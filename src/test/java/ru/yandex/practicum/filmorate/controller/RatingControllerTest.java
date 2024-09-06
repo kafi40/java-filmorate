@@ -8,14 +8,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import ru.yandex.practicum.filmorate.service.RatingService;
+import ru.yandex.practicum.filmorate.service.impl.RatingServiceImpl;
 
 @WebMvcTest(RatingController.class)
 public class RatingControllerTest {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    RatingService service;
+    RatingServiceImpl service;
 
     @Test
     public void forGetRatingByIdWhenIsExistsThenStatusOk() throws Exception {

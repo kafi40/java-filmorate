@@ -1,14 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.user.UserRequest;
-import ru.yandex.practicum.filmorate.dto.user.UserDto;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.mapper.UserMapper;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.controller.model.user.UserDto;
+import ru.yandex.practicum.filmorate.controller.model.user.UserRequest;
 
 import java.util.List;
 import java.util.Set;
@@ -29,23 +22,14 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("Пользователь с ID = " + id + " не найден"));
     }
 
-    public List<UserDto> getAll() {
+public interface UserService extends BaseService<UserDto, UserRequest> {
+    Set<UserDto> getFriends(Long id);
 
-        return userStorage.getAll()
-                .stream()
-                .map(UserMapper::mapToUserDto)
-                .collect(Collectors.toList());
-    }
+    Set<UserDto> getCommonFriends(Long id, Long otherId);
 
-    public UserDto save(UserRequest request) {
-        if (request.getName() == null || request.getName().isBlank()) {
-            request.setName(request.getLogin());
-        }
-        User user = UserMapper.mapToUser(request);
-        user = userStorage.save(user);
-        return UserMapper.mapToUserDto(user);
-    }
+    boolean addFriend(Long id, Long otherId);
 
+    boolean deleteFriend(Long id, Long otherId);
     public UserDto update(UserRequest request) {
         if (request.getId() == null) {
             throw new ValidationException("ID", "Должен быть указан ID");

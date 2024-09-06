@@ -7,6 +7,8 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.RatingMapper;
 import ru.yandex.practicum.filmorate.storage.rating.RatingStorage;
 
+import ru.yandex.practicum.filmorate.controller.model.rating.RatingDto;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,19 +16,8 @@ import java.util.stream.Collectors;
 public class RatingService {
     private final RatingStorage ratingStorage;
 
-    public RatingService(@Qualifier("ratingDbStorage") RatingStorage ratingStorage) {
-        this.ratingStorage = ratingStorage;
-    }
+public interface RatingService {
+    RatingDto get(Long id);
 
-    public RatingDto get(Long id) {
-        return ratingStorage.get(id)
-                .map(RatingMapper::mapToMpaDto)
-                .orElseThrow(() -> new NotFoundException("Рейтинга с ID = " + id + " не найдено"));
-    }
-
-    public List<RatingDto> getAll() {
-        return ratingStorage.getAll().stream()
-                .map(RatingMapper::mapToMpaDto)
-                .collect(Collectors.toList());
-    }
+    List<RatingDto> getAll();
 }

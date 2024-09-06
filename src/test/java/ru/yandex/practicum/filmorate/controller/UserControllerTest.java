@@ -10,7 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.impl.UserServiceImpl;
 
 import java.time.LocalDate;
 
@@ -20,7 +20,7 @@ public class UserControllerTest {
     private final MockMvc mvc;
     private final ObjectMapper objectMapper;
     @MockBean
-    UserService userService;
+    UserServiceImpl userServiceImpl;
 
     @Autowired
     public UserControllerTest(MockMvc mvc, ObjectMapper objectMapper) {

@@ -1,12 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.controller.model.genre.GenreDto;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
+
 
 import java.util.List;
 import java.util.Set;
@@ -16,9 +13,8 @@ import java.util.stream.Collectors;
 public class GenreService {
     private final GenreStorage genreStorage;
 
-    public GenreService(@Qualifier("genreDbStorage") GenreStorage genreStorage) {
-        this.genreStorage = genreStorage;
-    }
+public interface GenreService {
+    GenreDto get(Long id);
 
     public GenreDto get(Long id) {
         return genreStorage.get(id)
@@ -41,4 +37,5 @@ public class GenreService {
     public Set<Genre> getForFilm(Long id) {
         return genreStorage.getForFilm(id);
     }
+    List<GenreDto> getAll();
 }

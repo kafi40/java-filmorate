@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
+import ru.yandex.practicum.filmorate.controller.model.film.FilmDto;
+import ru.yandex.practicum.filmorate.controller.model.film.FilmRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.director.DirectorRequest;
@@ -68,6 +70,7 @@ public class FilmService {
         return FilmMapper.mapToFilmDto(film);
     }
 
+import java.util.List;
     public FilmDto update(FilmRequest request) {
         if (request.getId() == null) {
             throw new ValidationException("ID", "Должен быть указан ID");
@@ -82,22 +85,14 @@ public class FilmService {
         return FilmMapper.mapToFilmDto(updatedFilm);
     }
 
-    public boolean delete(Long id) {
-        return filmStorage.delete(id);
-    }
+public interface FilmService extends BaseService<FilmDto, FilmRequest> {
+    boolean putLike(Long id, Long userId);
 
-    public boolean putLike(Long id, Long userId) {
-        checkId(id);
-        userService.checkId(userId);
-        return filmStorage.putLike(id, userId);
-    }
+    boolean deleteLike(Long id, Long userId);
 
-    public boolean deleteLike(Long id, Long userId) {
-        checkId(id);
-        userService.checkId(userId);
-        return filmStorage.deleteLike(id, userId);
-    }
+    List<FilmDto> getTopFilms(int count);
 
+    List<FilmDto> getCommonFilms(Long userId, Long friendId);
     public List<FilmDto> getTopFilms(int count, Long genreId, Integer year) {
         if (genreId != null) {
             genreService.checkId(genreId);
