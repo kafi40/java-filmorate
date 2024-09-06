@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.activity.ActivityDto;
 import ru.yandex.practicum.filmorate.dto.user.UserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -52,6 +53,11 @@ public class UserController {
     @GetMapping("/{id}/friends/common/{otherId}")
     public Set<UserDto> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
         return userService.getCommonFriends(id, otherId);
+    }
+
+    @GetMapping("/{id}/feed")
+    public Set<ActivityDto> getUserFeed(@PathVariable Long id) {
+        return userService.getUserFeed(id);
     }
 
     @PutMapping("/{id}/friends/{friendsId}")

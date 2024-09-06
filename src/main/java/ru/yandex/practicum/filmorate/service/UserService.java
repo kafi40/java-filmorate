@@ -2,12 +2,15 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.activity.ActivityDto;
 import ru.yandex.practicum.filmorate.dto.user.UserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.mapper.ActivityMapper;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.activity.ActivityStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
@@ -18,9 +21,12 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final ActivityStorage activityStorage;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
+                       ActivityStorage activityStorage) {
         this.userStorage = userStorage;
+        this.activityStorage = activityStorage;
     }
 
     public UserDto get(Long id) {
@@ -35,6 +41,13 @@ public class UserService {
                 .stream()
                 .map(UserMapper::mapToUserDto)
                 .collect(Collectors.toList());
+    }
+
+    public Set<ActivityDto> getUserFeed(Long userId) {
+        return activityStorage.getUserFeed(userId)
+                .stream()
+                .map(ActivityMapper::MapToActivityDto)
+                .collect(Collectors.toSet());
     }
 
     public UserDto save(UserRequest request) {
