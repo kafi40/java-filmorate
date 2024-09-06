@@ -13,14 +13,14 @@ import java.util.Set;
 
 @Repository
 public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage {
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM genre WHERE id = ?";
-    private static final String FIND_ALL_QUERY = "SELECT * FROM genre";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM genres WHERE id = ?";
+    private static final String FIND_ALL_QUERY = "SELECT * FROM genres";
     private static final String FIND_GENRE_FOR_FILM =
             """
-            SELECT g."id", g."name" FROM "genre" AS g
-            JOIN "film_genre" AS fg
+            SELECT g."id", g."name" FROM "genres" AS g
+            JOIN "film_genres" AS fg
             ON g."id" = fg."genre_id"
-            JOIN "film" AS f
+            JOIN "films" AS f
             ON fg."film_id" = f."id"
             WHERE f."id" = ?
             """;
