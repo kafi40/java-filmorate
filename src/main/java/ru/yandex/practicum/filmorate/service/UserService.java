@@ -7,9 +7,13 @@ import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,9 +22,15 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
+    private final GenreStorage genreStorage;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
+                       @Qualifier("filmDbStorage") FilmStorage filmStorage,
+                       @Qualifier("genreDbStorage") GenreStorage genreStorage) {
         this.userStorage = userStorage;
+        this.filmStorage = filmStorage;
+        this.genreStorage = genreStorage;
     }
 
     public UserDto get(Long id) {
@@ -106,4 +116,23 @@ public class UserService {
         }
     }
 
+    public List<Film> getRecommendations(int userId) {
+        List<Long> bestRepetitionUserIds = userStorage.getBestRepetitionUserIds(userId);
+
+        if (bestRepetitionUserIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Film> recommendationsFilms = bestRepetitionUserIds.stream()
+                .flatMap(userIdBestRep -> filmStorage.getRecommendations(userId, userIdBestRep).stream())
+                .toList();
+
+        if (!recommendationsFilms.isEmpty()) {
+            recommendationsFilms.stream()
+                    .filter(film -> !genreStorage.getForFilm(film.getId()).isEmpty())
+                    .forEach(film -> film.setGenres(genreStorage.getForFilm(film.getId())));
+        }
+
+        return recommendationsFilms;
+    }
 }

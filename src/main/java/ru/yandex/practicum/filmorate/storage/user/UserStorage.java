@@ -32,4 +32,6 @@ public interface UserStorage {
     boolean isFriend(Object... params);
 
     boolean removeRequest(Object... params);
+
+    List<Long> getBestRepetitionUserIds(int userId);
 }
