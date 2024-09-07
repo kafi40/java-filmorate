@@ -18,26 +18,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String UPDATE_QUERY = "UPDATE film SET name = ?, description = ?, release_date = ?, duration = ?, " +
             "rating_id = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM film WHERE id = ?";
-    private static final String FIND_TOP_FILMS =
-            """
-            SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film"
-            LEFT JOIN "user_film_liked" ufl ON "film"."id" = ufl."film_id"
-            GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
-            ORDER BY COUNT(*) DESC
-            LIMIT ?
-            """;
-    private static final String ADD_LIKE =
-            """
-            INSERT INTO "user_film_liked"("user_id", "film_id") VALUES (?, ?)
-            """;
-    private static final String DELETE_LIKE =
-            """
-            DELETE FROM "user_film_liked" WHERE "user_id" = ? AND "film_id" = ?
-            """;
-    private static final String ADD_GENRE_FOR_FILM =
-            """
-            INSERT INTO "film_genre"("film_id", "genre_id") VALUES (?, ?)
-            """;
     private static final String FIND_COMMON_FILMS =
             """
             SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film"
@@ -49,6 +29,22 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             HAVING COUNT(*) > 1)
             GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
             ORDER BY COUNT(*) DESC
+            """;
+    private static final String FIND_TOP_FILMS = "SELECT id, name, description, release_date, duration, rating_id FROM film " +
+            "LEFT JOIN user_film_liked ufl ON film.id = ufl.film_id " +
+            "GROUP BY id, name, description, release_date, duration, rating_id " +
+            "ORDER BY COUNT(*) DESC " +
+            "LIMIT ?";
+    private static final String ADD_LIKE = "INSERT INTO user_film_liked(user_id, film_id) VALUES (?, ?)";
+    private static final String DELETE_LIKE = "DELETE FROM user_film_liked WHERE user_id = ? AND film_id = ?";
+    private static final String ADD_GENRE_FOR_FILM = "INSERT INTO film_genre(film_id, genre_id) VALUES (?, ?)";
+    private static final String GET_RECOMMENDATIONS =
+            """
+            SELECT film.id, film.name, film.description, film.release_date, film.duration, film.rating_id FROM film
+            LEFT JOIN rating ON film.rating_id = rating.id
+            RIGHT JOIN (SELECT film_id FROM user_film_liked WHERE user_id = ?
+            EXCEPT SELECT film_id FROM user_film_liked WHERE user_id = ?)
+            AS liked_films ON liked_films.film_id = film.id
             """;
 
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
@@ -121,5 +117,10 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public List<Film> findCommonFilms(Long userId, Long friendId) {
         return jdbc.query(FIND_COMMON_FILMS, mapper, userId, friendId);
+    }
+
+    @Override
+    public List<Film> getRecommendations(long userId, long bestRepetitionUserId) {
+        return findMany(GET_RECOMMENDATIONS, bestRepetitionUserId, userId);
     }
 }
