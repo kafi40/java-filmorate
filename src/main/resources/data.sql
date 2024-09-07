@@ -59,3 +59,9 @@ VALUES
     ('mihan@ya.ru','mihan','Mihail','1994-08-15'),
     ('toshka@ya.ru','toshka','Anatoliy','1990-11-07'),
     ('miracle@ya.ru','miracle','Danya','2003-03-27');
+
+INSERT INTO "user_film_liked" ("user_id", "film_id")
+VALUES
+('1', '2'),
+('2', '3'),
+('3', '4');
