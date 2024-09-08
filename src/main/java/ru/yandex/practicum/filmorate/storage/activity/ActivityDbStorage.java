@@ -7,8 +7,7 @@ import ru.yandex.practicum.filmorate.model.Activity;
 import ru.yandex.practicum.filmorate.storage.BaseDbStorage;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+
 
 @Repository
 public class ActivityDbStorage extends BaseDbStorage<Activity> implements ActivityStorage {
@@ -40,6 +39,6 @@ public class ActivityDbStorage extends BaseDbStorage<Activity> implements Activi
                 activity.getEventType().toString(),
                 activity.getTimestamp(),
                 activity.getEntityId()
-                );
+        );
     }
 }
