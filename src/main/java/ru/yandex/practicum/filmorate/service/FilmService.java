@@ -9,12 +9,13 @@ import ru.yandex.practicum.filmorate.exception.ElementNotExistsException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.activity.ActivityStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.rating.RatingStorage;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,15 +25,18 @@ public class FilmService {
     private final RatingStorage ratingStorage;
     private final UserService userService;
     private final GenreService genreService;
+    private final ActivityStorage activityStorage;
 
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        @Qualifier("ratingDbStorage") RatingStorage ratingStorage,
                        UserService userService,
-                       GenreService genreService) {
+                       GenreService genreService,
+                       ActivityStorage activityStorage) {
         this.filmStorage = filmStorage;
         this.ratingStorage = ratingStorage;
         this.userService = userService;
         this.genreService = genreService;
+        this.activityStorage = activityStorage;
     }
 
     public FilmDto get(Long id) {
@@ -81,12 +85,32 @@ public class FilmService {
     public boolean putLike(Long id, Long userId) {
         checkId(id);
         userService.checkId(userId);
+
+        Activity activity = new Activity();
+        activity.setEventType(EventType.LIKE);
+        activity.setTimestamp(Timestamp.from(Instant.now()));
+        activity.setUserId(userId);
+        activity.setEntityId(id);
+        activity.setOperation(Operation.ADD);
+
+        activityStorage.save(activity);
+
         return filmStorage.putLike(id, userId);
     }
 
     public boolean deleteLike(Long id, Long userId) {
         checkId(id);
         userService.checkId(userId);
+
+        Activity activity = new Activity();
+        activity.setEventType(EventType.LIKE);
+        activity.setTimestamp(Timestamp.from(Instant.now()));
+        activity.setUserId(userId);
+        activity.setEntityId(id);
+        activity.setOperation(Operation.REMOVE);
+
+        activityStorage.save(activity);
+
         return filmStorage.deleteLike(id, userId);
     }
 

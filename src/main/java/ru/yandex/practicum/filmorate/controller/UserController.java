@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -56,7 +57,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/feed")
-    public Set<ActivityDto> getUserFeed(@PathVariable Long id) {
+    public List<ActivityDto> getUserFeed(@PathVariable Long id) {
         return userService.getUserFeed(id);
     }
 

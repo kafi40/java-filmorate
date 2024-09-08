@@ -15,7 +15,12 @@ public class ActivityDbStorage extends BaseDbStorage<Activity> implements Activi
 
     private static final String GET_USER_FEED_QUERY = """
             SELECT "event_id", "user_id", "operation", "event_type", "timestamp", "entity_id" FROM "users_feed"
-            WHERE "user_id" = ?;
+            WHERE "user_id" = ?
+            ORDER BY "timestamp" DESC;
+            """;
+    private static final String INSERT_QUERY = """
+            INSERT INTO "users_feed" ("user_id", "operation", "event_type", "timestamp", "entity_id")
+            VALUES(?,?,?,?,?);
             """;
 
     public ActivityDbStorage(JdbcTemplate jdbc, RowMapper<Activity> mapper) {
@@ -25,5 +30,16 @@ public class ActivityDbStorage extends BaseDbStorage<Activity> implements Activi
     @Override
     public List<Activity> getUserFeed(Long userId) {
         return findMany(GET_USER_FEED_QUERY, userId);
+    }
+
+    @Override
+    public void save(Activity activity) {
+        insert(INSERT_QUERY,
+                activity.getUserId(),
+                activity.getOperation().toString(),
+                activity.getEventType().toString(),
+                activity.getTimestamp(),
+                activity.getEntityId()
+                );
     }
 }

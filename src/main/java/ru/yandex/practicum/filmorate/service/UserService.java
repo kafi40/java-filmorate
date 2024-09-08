@@ -9,10 +9,15 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.ActivityMapper;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.Activity;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.activity.ActivityStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,6 +49,9 @@ public class UserService {
     }
 
     public List<ActivityDto> getUserFeed(Long userId) {
+
+        checkId(userId);
+
         return activityStorage.getUserFeed(userId)
                 .stream()
                 .map(ActivityMapper::MapToActivityDto)
@@ -93,8 +101,16 @@ public class UserService {
         if (id.equals(otherId)) {
             throw new RuntimeException("Нельзя добавить самого себя в друзья");
         }
+        Activity activity = new Activity();
+        activity.setEventType(EventType.FRIEND);
         checkId(id);
         checkId(otherId);
+        activity.setTimestamp(Timestamp.from(Instant.now()));
+        activity.setUserId(id);
+        activity.setEntityId(otherId);
+        activity.setOperation(Operation.ADD);
+        activityStorage.save(activity);
+
         if (userStorage.isFriendRequest(id, otherId)) {
             return userStorage.acceptRequest(id, otherId);
         }
@@ -107,6 +123,15 @@ public class UserService {
         }
         checkId(id);
         checkId(otherId);
+
+        Activity activity = new Activity();
+        activity.setEventType(EventType.FRIEND);
+        activity.setTimestamp(Timestamp.from(Instant.now()));
+        activity.setUserId(id);
+        activity.setEntityId(otherId);
+        activity.setOperation(Operation.REMOVE);
+        activityStorage.save(activity);
+
         if (userStorage.isFriend(id, otherId)) {
             return userStorage.removeRequest(id, otherId);
         }

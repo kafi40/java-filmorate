@@ -7,9 +7,15 @@ import ru.yandex.practicum.filmorate.dto.activity.ActivityRequest;
 import ru.yandex.practicum.filmorate.model.Activity;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ActivityMapper {
+public final class ActivityMapper {
     public static ActivityDto MapToActivityDto(Activity activity) {
         ActivityDto activityDto = new ActivityDto();
+        activityDto.setEntityId(activity.getEntityId());
+        activityDto.setTimestamp(activity.getTimestamp());
+        activityDto.setOperation(activity.getOperation());
+        activityDto.setUserId(activity.getUserId());
+        activityDto.setEventId(activity.getEventId());
+        activityDto.setEventType(activity.getEventType());
 
         return activityDto;
     }

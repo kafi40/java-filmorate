@@ -7,4 +7,6 @@ import java.util.Set;
 
 public interface ActivityStorage {
     List<Activity> getUserFeed(Long userId);
+
+    void save(Activity activity);
 }
