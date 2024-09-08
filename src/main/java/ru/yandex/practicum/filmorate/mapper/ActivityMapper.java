@@ -9,7 +9,9 @@ import ru.yandex.practicum.filmorate.model.Activity;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ActivityMapper {
     public static ActivityDto MapToActivityDto(Activity activity) {
-        return new ActivityDto();
+        ActivityDto activityDto = new ActivityDto();
+
+        return activityDto;
     }
 
     public static Activity MapToActivity(ActivityRequest request) {

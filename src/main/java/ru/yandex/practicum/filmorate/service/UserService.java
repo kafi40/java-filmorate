@@ -43,11 +43,11 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public Set<ActivityDto> getUserFeed(Long userId) {
+    public List<ActivityDto> getUserFeed(Long userId) {
         return activityStorage.getUserFeed(userId)
                 .stream()
                 .map(ActivityMapper::MapToActivityDto)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     public UserDto save(UserRequest request) {
