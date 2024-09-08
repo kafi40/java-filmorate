@@ -9,6 +9,8 @@ import ru.yandex.practicum.filmorate.dto.film.FilmRequest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,6 +32,7 @@ public class FilmController {
         return filmService.get(id);
     }
 
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public FilmDto createFilm(@Valid @RequestBody FilmRequest request) {
@@ -47,12 +50,20 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<FilmDto> getFilmsTop(@RequestParam(defaultValue = "10") int count) {
+
+    public List<FilmDto> getFilmsTop(@RequestParam(defaultValue = "10") int count,
+                                     @RequestParam(required = false) Long genreId,
+                                     @RequestParam(required = false) Integer year) {
         if (count < 1) {
             throw new ValidationException("count", "Некорректный размер выборки. Размер должен быть больше нуля");
         }
-        return filmService.getTopFilms(count);
+        if (year != null && (year < 1895 || year > LocalDate.now().getYear())) {
+            throw new ValidationException("year", "Некорректный год. Должен быть в пределах 1895 до нашего времени");
+        }
+        return filmService.getTopFilms(count, genreId, year);
+
     }
+
 
     @PutMapping("/{id}/like/{userId}")
     public boolean putLike(@PathVariable Long id, @PathVariable Long userId) {

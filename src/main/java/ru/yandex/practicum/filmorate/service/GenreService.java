@@ -32,6 +32,12 @@ public class GenreService {
                 .collect(Collectors.toList());
     }
 
+    public void checkId(Long id) {
+        if (genreStorage.get(id).isEmpty()) {
+            throw new NotFoundException("Жанра с ID " + id + " не существует");
+        }
+    }
+
     public Set<Genre> getForFilm(Long id) {
         return genreStorage.getForFilm(id);
     }
