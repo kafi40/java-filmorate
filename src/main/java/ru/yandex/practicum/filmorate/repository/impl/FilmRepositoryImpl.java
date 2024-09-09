@@ -26,36 +26,36 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
     static String DELETE_QUERY = "DELETE FROM film WHERE id = ?";
     static String FIND_TOP_FILMS =
             """
-            SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film"
-            LEFT JOIN "user_film_liked" ufl ON "film"."id" = ufl."film_id"
-            GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
-            ORDER BY COUNT(*) DESC
-            LIMIT ?
-            """;
+                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film"
+                    LEFT JOIN "user_film_liked" ufl ON "film"."id" = ufl."film_id"
+                    GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
+                    ORDER BY COUNT(*) DESC
+                    LIMIT ?
+                    """;
     static String ADD_LIKE =
              """
-             INSERT INTO "user_film_liked"("user_id", "film_id") VALUES (?, ?)
-             """;
+                     INSERT INTO "user_film_liked"("user_id", "film_id") VALUES (?, ?)
+                     """;
     static String DELETE_LIKE =
             """
-            DELETE FROM "user_film_liked" WHERE "user_id" = ? AND "film_id" = ?
-            """;
+                    DELETE FROM "user_film_liked" WHERE "user_id" = ? AND "film_id" = ?
+                    """;
     static String ADD_GENRE_FOR_FILM =
             """
-            INSERT INTO "film_genre"("film_id", "genre_id") VALUES (?, ?)
-            """;
+                    INSERT INTO "film_genre"("film_id", "genre_id") VALUES (?, ?)
+                    """;
     static String FIND_COMMON_FILMS =
             """
-            SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film"
-            LEFT JOIN "user_film_liked" ufl ON "film"."id" = ufl."film_id"
-            WHERE "id" IN (
-            SELECT "film_id" FROM "user_film_liked"
-            WHERE "user_id" IN (?, ?)
-            GROUP BY "film_id"
-            HAVING COUNT(*) > 1)
-            GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
-            ORDER BY COUNT(*) DESC
-            """;
+                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "film"
+                    LEFT JOIN "user_film_liked" ufl ON "film"."id" = ufl."film_id"
+                    WHERE "id" IN (
+                    SELECT "film_id" FROM "user_film_liked"
+                    WHERE "user_id" IN (?, ?)
+                    GROUP BY "film_id"
+                    HAVING COUNT(*) > 1)
+                    GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
+                    ORDER BY COUNT(*) DESC
+                    """;
 
     public FilmRepositoryImpl(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);

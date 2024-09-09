@@ -24,52 +24,52 @@ public class UserRepositoryImpl extends BaseRepository<User> implements UserRepo
     static String DELETE_QUERY = "DELETE FROM user WHERE id = ?";
     static String FIND_FRIENDS_QUERY =
             """
-            SELECT * FROM "user" WHERE "id" IN (
-            SELECT "friend_id" FROM "user_friend"
-            WHERE "user_id" = ?
-            UNION ALL
-            SELECT "user_id" FROM "user_friend"
-            WHERE "friend_id" = ? AND "is_accept" = true)
-            """;
+                    SELECT * FROM "user" WHERE "id" IN (
+                    SELECT "friend_id" FROM "user_friend"
+                    WHERE "user_id" = ?
+                    UNION ALL
+                    SELECT "user_id" FROM "user_friend"
+                    WHERE "friend_id" = ? AND "is_accept" = true)
+                    """;
 
     static String FIND_COMMON_FRIENDS =
             """
-            SELECT * FROM "user" WHERE "id" IN (
-            SELECT * FROM (
-            SELECT "friend_id"  FROM "user_friend"
-            WHERE "user_id" = ? OR "user_id" = ?
-            UNION ALL
-            SELECT "user_id" FROM "user_friend"
-            WHERE ("friend_id" = ? OR "friend_id" = ?) AND "is_accept" = true) as cf
-            GROUP BY "friend_id"
-            HAVING COUNT(*) > 1)
-            """;
+                    SELECT * FROM "user" WHERE "id" IN (
+                    SELECT * FROM (
+                    SELECT "friend_id"  FROM "user_friend"
+                    WHERE "user_id" = ? OR "user_id" = ?
+                    UNION ALL
+                    SELECT "user_id" FROM "user_friend"
+                    WHERE ("friend_id" = ? OR "friend_id" = ?) AND "is_accept" = true) as cf
+                    GROUP BY "friend_id"
+                    HAVING COUNT(*) > 1)
+                    """;
 
     static String ADD_FRIEND_QUERY =
             """
-            INSERT INTO "user_friend"("user_id", "friend_id", "is_accept")
-            VALUES (?, ?, false)
-            """;
+                    INSERT INTO "user_friend"("user_id", "friend_id", "is_accept")
+                    VALUES (?, ?, false)
+                    """;
     static String DELETE_FRIEND_QUERY =
             """
-            DELETE FROM "user_friend" WHERE "user_id" = ? AND "friend_id" = ?
-            """;
+                    DELETE FROM "user_friend" WHERE "user_id" = ? AND "friend_id" = ?
+                    """;
     static String IS_FRIEND_REQUEST =
             """
-            SELECT * FROM "user_friend" WHERE "friend_id" = ? AND "user_id" = ? AND "is_accept" = false
-            """;
+                    SELECT * FROM "user_friend" WHERE "friend_id" = ? AND "user_id" = ? AND "is_accept" = false
+                    """;
     static String ACCEPT_REQUEST =
             """
-            UPDATE "user_friend" SET "is_accept" = true WHERE "user_id" = ? AND "friend_id" = ?
-            """;
+                    UPDATE "user_friend" SET "is_accept" = true WHERE "user_id" = ? AND "friend_id" = ?
+                    """;
     static String IS_FRIEND =
             """
-            SELECT * FROM "user_friend" WHERE "friend_id" = ? AND "user_id" = ? AND "is_accept" = true
-            """;
+                    SELECT * FROM "user_friend" WHERE "friend_id" = ? AND "user_id" = ? AND "is_accept" = true
+                    """;
     static String REMOVE_REQUEST =
             """
-            UPDATE "user_friend" SET "is_accept" = false WHERE "friend_id" = ? AND "user_id" = ?
-            """;
+                    UPDATE "user_friend" SET "is_accept" = false WHERE "friend_id" = ? AND "user_id" = ?
+                    """;
 
     public UserRepositoryImpl(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
