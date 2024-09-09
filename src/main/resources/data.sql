@@ -61,7 +61,7 @@ VALUES
     ('miracle@ya.ru','miracle','Danya','2003-03-27');
 
 
-INSERT INTO "director" ("name")
+INSERT INTO "directors" ("name")
 VALUES
     ('Filipp'),
     ('Artem'),
