@@ -1,10 +1,13 @@
-package ru.yandex.practicum.filmorate.storage.director;
+package ru.yandex.practicum.filmorate.repository.impl;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.storage.BaseDbStorage;
+import ru.yandex.practicum.filmorate.repository.BaseRepository;
+import ru.yandex.practicum.filmorate.repository.DirectorRepository;
 
 import java.util.HashSet;
 import java.util.List;
@@ -12,21 +15,22 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
-public class DirectorDbStorage extends BaseDbStorage<Director> implements DirectorStorage {
-    private static final String INSERT_QUERY = "INSERT INTO directors(name) VALUES (?)";
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM directors WHERE id = ?";
-    private static final String FIND_ALL_QUERY = "SELECT * FROM directors";
-    private static final String DELETE_QUERY = "DELETE FROM directors WHERE id = ?";
-    private static final String UPDATE_QUERY = " UPDATE directors SET name = ? WHERE id = ?";
-    private static final String FIND_DIRECTOR_FOR_FILM =
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class DirectorRepositoryImpl extends BaseRepository<Director> implements DirectorRepository {
+    static String INSERT_QUERY = "INSERT INTO directors(name) VALUES (?)";
+    static String FIND_BY_ID_QUERY = "SELECT * FROM directors WHERE id = ?";
+    static String FIND_ALL_QUERY = "SELECT * FROM directors";
+    static String DELETE_QUERY = "DELETE FROM directors WHERE id = ?";
+    static String UPDATE_QUERY = " UPDATE directors SET name = ? WHERE id = ?";
+    static String FIND_DIRECTOR_FOR_FILM =
             """
-                    SELECT d.id, d.name FROM directors AS d
-                    JOIN film_directors AS fd ON d.id = fd.director_id
-                    JOIN films AS f ON fd.film_id = f.id
-                    WHERE f.id = ?
+                    SELECT d."id", d."name" FROM "directors" AS d
+                    JOIN "film_directors" AS fd ON d."id" = fd."director_id"
+                    JOIN "films" AS f ON fd."film_id" = f."id"
+                    WHERE f."id" = ?
                     """;
 
-    public DirectorDbStorage(JdbcTemplate jdbc, RowMapper<Director> mapper) {
+    public DirectorRepositoryImpl(JdbcTemplate jdbc, RowMapper<Director> mapper) {
         super(jdbc, mapper);
     }
 

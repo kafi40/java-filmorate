@@ -2,11 +2,7 @@ package ru.yandex.practicum.filmorate.controller.model.film;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
-import ru.yandex.practicum.filmorate.dto.rating.RatingDto;
-
-import ru.yandex.practicum.filmorate.model.Director;
-
+import ru.yandex.practicum.filmorate.controller.model.director.DirectorDto;
 import ru.yandex.practicum.filmorate.controller.model.genre.GenreDto;
 import ru.yandex.practicum.filmorate.controller.model.rating.RatingDto;
 
@@ -24,7 +20,7 @@ public class FilmDto {
     private Integer duration;
     private RatingDto mpa;
     private List<GenreDto> genres;
-    private List<Director> directors;
+    private List<DirectorDto> directors;
 
     public FilmDto() {
         this.genres = new ArrayList<>();

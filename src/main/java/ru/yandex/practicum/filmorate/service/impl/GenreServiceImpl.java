@@ -7,12 +7,10 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.model.genre.GenreDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.controller.mapper.GenreMapper;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.repository.GenreRepository;
 import ru.yandex.practicum.filmorate.service.GenreService;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,9 +29,5 @@ public class GenreServiceImpl implements GenreService {
         return genreRepository.getAll().stream()
                 .map(GenreMapper::mapToGenreDto)
                 .collect(Collectors.toList());
-    }
-
-    public Set<Genre> getForFilm(Long id) {
-        return genreRepository.getForFilm(id);
     }
 }

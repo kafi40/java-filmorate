@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS "user_friends" CASCADE;
 DROP TABLE IF EXISTS "directors" CASCADE;
 DROP TABLE IF EXISTS "film_directors" CASCADE;
 DROP TABLE IF EXISTS "reviews" CASCADE;
-DROP TABLE IF EXISTS "user_review_scored" CASCADE;
+DROP TABLE IF EXISTS "user_reviews_scored" CASCADE;
 
 CREATE TABLE IF NOT EXISTS "genres"
 (
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS "reviews"
     film_id INTEGER NOT NULL REFERENCES "films" (id)
 );
 
-CREATE TABLE IF NOT EXISTS "user_review_scored"
+CREATE TABLE IF NOT EXISTS "user_reviews_scored"
 (
     user_id INTEGER NOT NULL REFERENCES "users" (id)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -90,8 +90,8 @@ CREATE TABLE IF NOT EXISTS "user_review_scored"
     score INTEGER NOT NULL
 );
 
-ALTER TABLE "user_review_scored"
-ADD CONSTRAINT "uq_user_review"
+ALTER TABLE "user_reviews_scored"
+ADD CONSTRAINT "uq_user_reviews"
     UNIQUE ("review_id", "user_id");
 
 

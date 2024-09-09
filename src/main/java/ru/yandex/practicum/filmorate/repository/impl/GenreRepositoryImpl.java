@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.repository.impl;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.FieldNameConstants;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -17,16 +16,15 @@ import java.util.Set;
 
 @Repository
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@FieldNameConstants
 public class GenreRepositoryImpl extends BaseRepository<Genre> implements GenreRepository {
-    static String FIND_BY_ID_QUERY = "SELECT * FROM genre WHERE id = ?";
-    static String FIND_ALL_QUERY = "SELECT * FROM genre";
+    static String FIND_BY_ID_QUERY = "SELECT * FROM genres WHERE id = ?";
+    static String FIND_ALL_QUERY = "SELECT * FROM genres";
     static String FIND_GENRE_FOR_FILM =
             """
-                    SELECT g."id", g."name" FROM "genre" AS g
-                    JOIN "film_genre" AS fg
+                    SELECT g."id", g."name" FROM "genres" AS g
+                    JOIN "film_genres" AS fg
                     ON g."id" = fg."genre_id"
-                    JOIN "film" AS f
+                    JOIN "films" AS f
                     ON fg."film_id" = f."id"
                     WHERE f."id" = ?
                     """;

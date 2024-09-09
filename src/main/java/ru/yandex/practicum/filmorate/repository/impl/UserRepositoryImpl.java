@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.repository.impl;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.FieldNameConstants;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -14,62 +13,61 @@ import java.util.*;
 
 @Repository
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@FieldNameConstants
 public class UserRepositoryImpl extends BaseRepository<User> implements UserRepository {
-    static String FIND_BY_ID_QUERY = "SELECT * FROM user WHERE id = ?";
-    static String FIND_ALL_QUERY = "SELECT * FROM user";
-    static String INSERT_QUERY = "INSERT INTO user(email, login, name, birthday)" +
+    static String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE id = ?";
+    static String FIND_ALL_QUERY = "SELECT * FROM users";
+    static String INSERT_QUERY = "INSERT INTO users(email, login, name, birthday)" +
             "VALUES (?, ?, ?, ?)";
-    static String UPDATE_QUERY = "UPDATE user SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
-    static String DELETE_QUERY = "DELETE FROM user WHERE id = ?";
+    static String UPDATE_QUERY = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
+    static String DELETE_QUERY = "DELETE FROM users WHERE id = ?";
     static String FIND_FRIENDS_QUERY =
             """
-            SELECT * FROM "users" WHERE "id" IN (
-            SELECT "friend_id" FROM "user_friends"
-            WHERE "user_id" = ?
-            UNION ALL
-            SELECT "user_id" FROM "user_friends"
-            WHERE "friend_id" = ? AND "is_accept" = true)
-            """;
+                    SELECT * FROM "users" WHERE "id" IN (
+                    SELECT "friend_id" FROM "user_friends"
+                    WHERE "user_id" = ?
+                    UNION ALL
+                    SELECT "user_id" FROM "user_friends"
+                    WHERE "friend_id" = ? AND "is_accept" = true)
+                    """;
 
     static String FIND_COMMON_FRIENDS =
             """
-            SELECT * FROM "users" WHERE "id" IN (
-            SELECT * FROM (
-            SELECT "friend_id"  FROM "user_friends"
-            WHERE "user_id" = ? OR "user_id" = ?
-            UNION ALL
-            SELECT "user_id" FROM "user_friends"
-            WHERE ("friend_id" = ? OR "friend_id" = ?) AND "is_accept" = true) as cf
-            GROUP BY "friend_id"
-            HAVING COUNT(*) > 1)
-            """;
+                    SELECT * FROM "users" WHERE "id" IN (
+                    SELECT * FROM (
+                    SELECT "friend_id"  FROM "user_friends"
+                    WHERE "user_id" = ? OR "user_id" = ?
+                    UNION ALL
+                    SELECT "user_id" FROM "user_friends"
+                    WHERE ("friend_id" = ? OR "friend_id" = ?) AND "is_accept" = true) as cf
+                    GROUP BY "friend_id"
+                    HAVING COUNT(*) > 1)
+                    """;
 
     static String ADD_FRIEND_QUERY =
             """
-            INSERT INTO "user_friends"("user_id", "friend_id", "is_accept")
-            VALUES (?, ?, false)
-            """;
+                    INSERT INTO "user_friends"("user_id", "friend_id", "is_accept")
+                    VALUES (?, ?, false)
+                    """;
     static String DELETE_FRIEND_QUERY =
             """
-            DELETE FROM "user_friends" WHERE "user_id" = ? AND "friend_id" = ?
-            """;
+                    DELETE FROM "user_friends" WHERE "user_id" = ? AND "friend_id" = ?
+                    """;
     static String IS_FRIEND_REQUEST =
             """
-            SELECT * FROM "user_friends" WHERE "friend_id" = ? AND "user_id" = ? AND "is_accept" = false
-            """;
+                    SELECT * FROM "user_friends" WHERE "friend_id" = ? AND "user_id" = ? AND "is_accept" = false
+                    """;
     static String ACCEPT_REQUEST =
             """
-            UPDATE "user_friends" SET "is_accept" = true WHERE "user_id" = ? AND "friend_id" = ?
-            """;
+                    UPDATE "user_friends" SET "is_accept" = true WHERE "user_id" = ? AND "friend_id" = ?
+                    """;
     static String IS_FRIEND =
             """
-            SELECT * FROM "user_friends" WHERE "friend_id" = ? AND "user_id" = ? AND "is_accept" = true
-            """;
+                    SELECT * FROM "user_friends" WHERE "friend_id" = ? AND "user_id" = ? AND "is_accept" = true
+                    """;
     static String REMOVE_REQUEST =
             """
-            UPDATE "user_friends" SET "is_accept" = false WHERE "friend_id" = ? AND "user_id" = ?
-            """;
+                    UPDATE "user_friends" SET "is_accept" = false WHERE "friend_id" = ? AND "user_id" = ?
+                    """;
 
     public UserRepositoryImpl(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);

@@ -1,13 +1,13 @@
-package ru.yandex.practicum.filmorate.mapper;
+package ru.yandex.practicum.filmorate.controller.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.yandex.practicum.filmorate.dto.director.DirectorDto;
-import ru.yandex.practicum.filmorate.dto.director.DirectorRequest;
+import ru.yandex.practicum.filmorate.controller.model.director.DirectorDto;
+import ru.yandex.practicum.filmorate.controller.model.director.DirectorRequest;
 import ru.yandex.practicum.filmorate.model.Director;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DirectorMapper {
+public final class DirectorMapper {
     public static DirectorDto mapToDirectorDto(Director director) {
         DirectorDto directorDto = new DirectorDto();
         directorDto.setId(director.getId());
@@ -22,7 +22,6 @@ public class DirectorMapper {
     }
 
     public static Director updateDirectorFields(Director director, DirectorRequest request) {
-        director.setId(request.getId());
         director.setName(request.getName());
         return director;
     }

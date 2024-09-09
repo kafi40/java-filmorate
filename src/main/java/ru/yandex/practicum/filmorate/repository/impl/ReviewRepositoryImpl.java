@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.repository.impl;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.FieldNameConstants;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -15,12 +14,11 @@ import java.util.Optional;
 
 @Repository
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@FieldNameConstants
 public class ReviewRepositoryImpl extends BaseRepository<Review> implements ReviewRepository {
     static String FIND_BY_ID_QUERY =
             """
                     SELECT id, content, is_positive, user_id, film_id,
-                        (SELECT SUM("score") FROM "user_review_scored"
+                        (SELECT SUM("score") FROM "user_reviews_scored"
                             WHERE review_id = id) as useful
                     FROM reviews WHERE id = ?
                     """;
@@ -32,7 +30,7 @@ public class ReviewRepositoryImpl extends BaseRepository<Review> implements Revi
     static String FIND_REVIEWS_WITH_LIMIT =
             """
                     SELECT "id", "content", "is_positive", "user_id", "film_id",
-                        (SELECT SUM("score") FROM "user_review_scored"
+                        (SELECT SUM("score") FROM "user_reviews_scored"
                         WHERE "review_id" = "id") as useful
                     FROM "reviews"
                     LIMIT ?
@@ -40,7 +38,7 @@ public class ReviewRepositoryImpl extends BaseRepository<Review> implements Revi
     static String FIND_REVIEWS_FOR_FILM =
             """
                     SELECT "id", "content", "is_positive", "user_id", "film_id",
-                        (SELECT SUM("score") FROM "user_review_scored"
+                        (SELECT SUM("score") FROM "user_reviews_scored"
                         WHERE "review_id" = "id") as useful
                     FROM "reviews"
                     WHERE "film_id" = ?
@@ -48,24 +46,24 @@ public class ReviewRepositoryImpl extends BaseRepository<Review> implements Revi
                     """;
     static String FIND_SCORE =
             """
-                    SELECT * FROM "user_review_scored"
+                    SELECT * FROM "user_reviews_scored"
                     WHERE "review_id" = ? AND "user_id" = ?
                     """;
     static String INSERT_SCORE =
-                """
-                    INSERT INTO "user_review_scored"("review_id", "user_id", "score")
+            """
+                    INSERT INTO "user_reviews_scored"("review_id", "user_id", "score")
                     VALUES (?, ?, ?)
                     """;
 
     static String UPDATE_SCORE =
             """
-                    UPDATE "user_review_scored"
+                    UPDATE "user_reviews_scored"
                     SET "score" = ?
                     WHERE "review_id" = ? AND "user_id" = ?
                     """;
     static String DELETE_SCORE =
             """
-                    DELETE FROM "user_review_scored"
+                    DELETE FROM "user_reviews_scored"
                     WHERE "review_id" = ? AND "user_id" = ?
                     """;
 

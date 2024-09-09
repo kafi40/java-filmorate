@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface GenreRepository {
+public interface GenreRepository extends Repository {
     Optional<Genre> get(Long id);
 
     List<Genre> getAll();

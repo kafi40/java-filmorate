@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.repository.impl;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.FieldNameConstants;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -15,15 +14,14 @@ import java.util.Optional;
 
 @Repository
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@FieldNameConstants
 public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepository {
-    static String FIND_BY_ID_QUERY = "SELECT * FROM film WHERE id = ?";
-    static String FIND_ALL_QUERY = "SELECT * FROM film";
-    static String INSERT_QUERY = "INSERT INTO film(name, description, release_date, duration, rating_id)" +
+    static String FIND_BY_ID_QUERY = "SELECT * FROM films WHERE id = ?";
+    static String FIND_ALL_QUERY = "SELECT * FROM films";
+    static String INSERT_QUERY = "INSERT INTO films(name, description, release_date, duration, rating_id)" +
             "VALUES (?, ?, ?, ?, ?)";
-    static String UPDATE_QUERY = "UPDATE film SET name = ?, description = ?, release_date = ?, duration = ?, " +
+    static String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, " +
             "rating_id = ? WHERE id = ?";
-    static String DELETE_QUERY = "DELETE FROM film WHERE id = ?";
+    static String DELETE_QUERY = "DELETE FROM films WHERE id = ?";
     static String FIND_TOP_FILMS =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" f
@@ -35,29 +33,29 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
     static String FIND_TOP_FILMS_BY_YEAR_AND_GENRE =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" AS f
-                    LEFT JOIN "user_films_liked" ufl ON f.ID = ufl.FILM_ID
-                    WHERE EXTRACT(YEAR FROM f.RELEASE_DATE) = ? AND f.ID IN
-                    (SELECT FILM_ID FROM "film_genres" AS fg WHERE fg.GENRE_ID = ?)
-                    GROUP BY f.ID
+                    LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
+                    WHERE EXTRACT(YEAR FROM f."release_date") = ? AND f."id" IN
+                    (SELECT "film_id" FROM "film_genres" AS fg WHERE fg."genre_id" = ?)
+                    GROUP BY f."id"
                     ORDER BY COUNT(*) DESC
                     LIMIT ?;
                     """;
     static String FIND_TOP_FILMS_BY_YEAR =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" AS f
-                    LEFT JOIN "user_films_liked" ufl ON f.ID = ufl.FILM_ID
-                    WHERE EXTRACT(YEAR FROM f.RELEASE_DATE) = ?
-                    GROUP BY f.ID
+                    LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
+                    WHERE EXTRACT(YEAR FROM f."release_date") = ?
+                    GROUP BY f."id"
                     ORDER BY COUNT(*) DESC
                     LIMIT ?;
                     """;
     static String FIND_TOP_FILMS_BY_GENRE =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" AS f
-                    LEFT JOIN "user_films_liked" ufl ON f.ID = ufl.FILM_ID
-                    WHERE f.ID IN
-                    (SELECT FILM_ID FROM "film_genres" AS fg WHERE fg.GENRE_ID = ?)
-                    GROUP BY f.ID
+                    LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
+                    WHERE f."id" IN
+                    (SELECT "film_id" FROM "film_genres" AS fg WHERE fg."genre_id" = ?)
+                    GROUP BY f."id"
                     ORDER BY COUNT(*) DESC
                     LIMIT ?;
                     """;
@@ -67,46 +65,46 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
                     """;
     static String DELETE_LIKE =
             """
-            DELETE FROM "user_films_liked" WHERE "user_id" = ? AND "film_id" = ?
-            """;
+                    DELETE FROM "user_films_liked" WHERE "user_id" = ? AND "film_id" = ?
+                    """;
     static String ADD_GENRE_FOR_FILM =
             """
                     INSERT INTO "film_genres"("film_id", "genre_id") VALUES (?, ?)
                     """;
     static String FIND_COMMON_FILMS =
             """
-            SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" f
-            LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
-            WHERE f."id" IN (
-            SELECT "film_id" FROM "user_films_liked"
-            WHERE "user_id" IN (?, ?)
-            GROUP BY "film_id"
-            HAVING COUNT(*) > 1)
-            GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
-            ORDER BY COUNT(*) DESC
-            """;
+                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" f
+                    LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
+                    WHERE f."id" IN (
+                    SELECT "film_id" FROM "user_films_liked"
+                    WHERE "user_id" IN (?, ?)
+                    GROUP BY "film_id"
+                    HAVING COUNT(*) > 1)
+                    GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
+                    ORDER BY COUNT(*) DESC
+                    """;
     static String FIND_FILMS_FOR_DIRECTOR_SORT_BY_YEAR_QUERY =
             """
-                    SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
+                    SELECT "id", "name", "description", "release_date", "duration", "rating_id"
                     FROM "films" AS f
-                    LEFT JOIN "film_directors" AS fd ON f.id = fd.film_id
-                    WHERE fd.director_id = ?
-                    GROUP BY id, name, description, release_date, duration, rating_id
-                    ORDER BY f.release_date
+                    LEFT JOIN "film_directors" AS fd ON f."id" = fd."film_id"
+                    WHERE fd."director_id" = ?
+                    GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
+                    ORDER BY f."release_date"
                     """;
     static String FIND_FILMS_FOR_DIRECTOR_SORT_BY_LIKES_QUERY =
             """
-                    SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
+                    SELECT "id", "name", "description", "release_date", "duration", "rating_id"
                     FROM "films" AS f
-                    LEFT JOIN "user_films_liked" ufl ON f.id = ufl.film_id
-                    JOIN "film_directors" fd ON f.id = fd.film_id
-                    WHERE fd.director_id = ?
-                    GROUP BY id, name, description, release_date, duration, rating_id
-                    ORDER BY COUNT(ufl.user_id) DESC;
+                    LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
+                    JOIN "film_directors" fd ON f."id" = fd."film_id"
+                    WHERE fd."director_id" = ?
+                    GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
+                    ORDER BY COUNT(ufl."user_id") DESC;
                     """;
     static String ADD_DIRECTOR_FOR_FILM =
             """
-                    INSERT INTO film_directors(film_id, director_id) VALUES (?, ?)
+                    INSERT INTO "film_directors"("film_id", "director_id") VALUES (?, ?)
                     """;
 
 

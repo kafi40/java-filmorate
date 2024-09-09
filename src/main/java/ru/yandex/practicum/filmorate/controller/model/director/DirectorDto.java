@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dto.director;
+package ru.yandex.practicum.filmorate.controller.model.director;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

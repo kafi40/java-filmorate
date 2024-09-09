@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.director;
+package ru.yandex.practicum.filmorate.repository;
 
 import ru.yandex.practicum.filmorate.model.Director;
 
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface DirectorStorage {
+public interface DirectorRepository {
 
     List<Director> findAll();
 
@@ -18,5 +18,5 @@ public interface DirectorStorage {
 
     Director save(Director director);
 
-    public Director update(Director newDirector);
+    Director update(Director newDirector);
 }

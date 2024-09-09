@@ -2,9 +2,11 @@ package ru.yandex.practicum.filmorate.controller.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import ru.yandex.practicum.filmorate.controller.model.director.DirectorDto;
 import ru.yandex.practicum.filmorate.controller.model.film.FilmDto;
 import ru.yandex.practicum.filmorate.controller.model.film.FilmRequest;
 import ru.yandex.practicum.filmorate.controller.model.genre.GenreDto;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -27,8 +29,9 @@ public final class FilmMapper {
                 .map(GenreMapper::mapToGenreDto)
                 .toList();
         filmDto.setGenres(genres);
-        List<Director> directors = film.getDirectors().stream()
+        List<DirectorDto> directors = film.getDirectors().stream()
                 .sorted(Director::compareTo)
+                .map(DirectorMapper::mapToDirectorDto)
                 .toList();
         filmDto.setDirectors(directors);
         return filmDto;
