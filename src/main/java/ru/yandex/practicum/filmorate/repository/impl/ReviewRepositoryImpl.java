@@ -19,11 +19,11 @@ import java.util.Optional;
 public class ReviewRepositoryImpl extends BaseRepository<Review> implements ReviewRepository {
     static String FIND_BY_ID_QUERY =
             """
-            SELECT id, content, is_positive, user_id, film_id,
-                (SELECT SUM("score") FROM "user_review_scored"
-                    WHERE review_id = id) as useful
-            FROM reviews WHERE id = ?
-            """;
+                    SELECT id, content, is_positive, user_id, film_id,
+                        (SELECT SUM("score") FROM "user_review_scored"
+                            WHERE review_id = id) as useful
+                    FROM reviews WHERE id = ?
+                    """;
     static String INSERT_QUERY = "INSERT INTO reviews(content, is_positive, user_id, film_id)" +
             "VALUES (?, ?, ?, ?)";
     static String UPDATE_QUERY = "UPDATE reviews SET content = ?, is_positive = ?, user_id = ?, film_id = ? " +
@@ -48,9 +48,9 @@ public class ReviewRepositoryImpl extends BaseRepository<Review> implements Revi
                     """;
     static String FIND_SCORE =
             """
-                SELECT * FROM "user_review_scored"
-                WHERE "review_id" = ? AND "user_id" = ?
-                """;
+                    SELECT * FROM "user_review_scored"
+                    WHERE "review_id" = ? AND "user_id" = ?
+                    """;
     static String INSERT_SCORE =
                 """
                     INSERT INTO "user_review_scored"("review_id", "user_id", "score")
@@ -59,10 +59,10 @@ public class ReviewRepositoryImpl extends BaseRepository<Review> implements Revi
 
     static String UPDATE_SCORE =
             """
-                UPDATE "user_review_scored"
-                SET "score" = ?
-                WHERE "review_id" = ? AND "user_id" = ?
-                """;
+                    UPDATE "user_review_scored"
+                    SET "score" = ?
+                    WHERE "review_id" = ? AND "user_id" = ?
+                    """;
     static String DELETE_SCORE =
             """
                     DELETE FROM "user_review_scored"

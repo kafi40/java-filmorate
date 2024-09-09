@@ -15,20 +15,15 @@ import java.util.Optional;
 
 @Repository
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
-    static String FIND_BY_ID_QUERY = "SELECT * FROM films WHERE id = ?";
-    static String FIND_ALL_QUERY = "SELECT * FROM films";
-    static String INSERT_QUERY =
-            """
-            INSERT INTO films(name, description, release_date, duration, rating_id)
-                                               VALUES (?, ?, ?, ?, ?)
-            """;
-    static String UPDATE_QUERY =
-            """
-            UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?,
-                                               rating_id = ? WHERE id = ?
-            """;
-    static String DELETE_QUERY = "DELETE FROM films WHERE id = ?";
+@FieldNameConstants
+public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepository {
+    static String FIND_BY_ID_QUERY = "SELECT * FROM film WHERE id = ?";
+    static String FIND_ALL_QUERY = "SELECT * FROM film";
+    static String INSERT_QUERY = "INSERT INTO film(name, description, release_date, duration, rating_id)" +
+            "VALUES (?, ?, ?, ?, ?)";
+    static String UPDATE_QUERY = "UPDATE film SET name = ?, description = ?, release_date = ?, duration = ?, " +
+            "rating_id = ? WHERE id = ?";
+    static String DELETE_QUERY = "DELETE FROM film WHERE id = ?";
     static String FIND_TOP_FILMS =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" f
@@ -68,8 +63,8 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     """;
     static String ADD_LIKE =
             """
-            INSERT INTO "user_films_liked"("user_id", "film_id") VALUES (?, ?)
-            """;
+                    INSERT INTO "user_films_liked"("user_id", "film_id") VALUES (?, ?)
+                    """;
     static String DELETE_LIKE =
             """
             DELETE FROM "user_films_liked" WHERE "user_id" = ? AND "film_id" = ?

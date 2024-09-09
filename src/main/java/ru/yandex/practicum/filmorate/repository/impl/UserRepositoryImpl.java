@@ -13,10 +13,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.*;
 
 @Repository
-public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE id = ?";
-    private static final String FIND_ALL_QUERY = "SELECT * FROM users";
-    private static final String INSERT_QUERY = "INSERT INTO users(email, login, name, birthday)" +
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @FieldNameConstants
 public class UserRepositoryImpl extends BaseRepository<User> implements UserRepository {
@@ -27,9 +23,6 @@ public class UserRepositoryImpl extends BaseRepository<User> implements UserRepo
     static String UPDATE_QUERY = "UPDATE user SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
     static String DELETE_QUERY = "DELETE FROM user WHERE id = ?";
     static String FIND_FRIENDS_QUERY =
-    private static final String UPDATE_QUERY = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
-    private static final String DELETE_QUERY = "DELETE FROM users WHERE id = ?";
-    private static final String FIND_FRIENDS_QUERY =
             """
             SELECT * FROM "users" WHERE "id" IN (
             SELECT "friend_id" FROM "user_friends"
