@@ -26,12 +26,12 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String DELETE_QUERY = "DELETE FROM films WHERE id = ?";
     private static final String FIND_TOP_FILMS =
             """
-            SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" f
-            LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
-            GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
-            ORDER BY COUNT(*) DESC
-            LIMIT ?
-            """;
+                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" f
+                    LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
+                    GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
+                    ORDER BY COUNT(*) DESC
+                    LIMIT ?
+                    """;
     private static final String FIND_TOP_FILMS_BY_YEAR_AND_GENRE =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" AS f
@@ -85,6 +85,30 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
             ORDER BY COUNT(*) DESC
             """;
+    private static final String FIND_FILMS_FOR_DIRECTOR_SORT_BY_YEAR_QUERY =
+            """
+                    SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
+                    FROM "films" AS f
+                    LEFT JOIN "film_directors" AS fd ON f.id = fd.film_id
+                    WHERE fd.director_id = ?
+                    GROUP BY id, name, description, release_date, duration, rating_id
+                    ORDER BY f.release_date
+                    """;
+    private static final String FIND_FILMS_FOR_DIRECTOR_SORT_BY_LIKES_QUERY =
+            """
+                    SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
+                    FROM "films" AS f
+                    LEFT JOIN "user_films_liked" ufl ON f.id = ufl.film_id
+                    JOIN "film_directors" fd ON f.id = fd.film_id
+                    WHERE fd.director_id = ?
+                    GROUP BY id, name, description, release_date, duration, rating_id
+                    ORDER BY COUNT(ufl.user_id) DESC;
+                    """;
+    private static final String ADD_DIRECTOR_FOR_FILM =
+            """
+                    INSERT INTO film_directors(film_id, director_id) VALUES (?, ?)
+                    """;
+
 
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -157,6 +181,16 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     }
 
     @Override
+    public List<Film> getDirectorsFilmSortByYear(Long id) {
+        return jdbc.query(FIND_FILMS_FOR_DIRECTOR_SORT_BY_YEAR_QUERY, mapper, id);
+    }
+
+    @Override
+    public List<Film> getDirectorsFilmSortByLikes(Long id) {
+        return jdbc.query(FIND_FILMS_FOR_DIRECTOR_SORT_BY_LIKES_QUERY, mapper, id);
+    }
+
+    @Override
     public void addGenreForFilm(Long id, Long genreId) {
         jdbc.update(ADD_GENRE_FOR_FILM, id, genreId);
     }
@@ -164,5 +198,10 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public List<Film> findCommonFilms(Long userId, Long friendId) {
         return jdbc.query(FIND_COMMON_FILMS, mapper, userId, friendId);
+    }
+
+    @Override
+    public void addDirectorForFilm(Long id, Long directorId) {
+        jdbc.update(ADD_DIRECTOR_FOR_FILM, id, directorId);
     }
 }

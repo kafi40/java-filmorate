@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.dto.film.FilmRequest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
-
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
@@ -65,6 +64,18 @@ public class FilmController {
     }
 
 
+    @GetMapping("/director/{directorId}")
+    public List<FilmDto> getDirectorFilmsByYears(@RequestParam String sortBy, @PathVariable Long directorId) {
+        if (sortBy.equals("year")) {
+            return filmService.getDirectorsFilmsByYear(directorId);
+        }
+        if (sortBy.equals("likes")) {
+            return filmService.getDirectorsFilmsByLikes(directorId);
+        } else {
+            throw new ValidationException("error", "Некорректный запрос");
+        }
+    }
+
     @PutMapping("/{id}/like/{userId}")
     public boolean putLike(@PathVariable Long id, @PathVariable Long userId) {
         return filmService.putLike(id, userId);
@@ -82,4 +93,6 @@ public class FilmController {
         }
         return filmService.getCommonFilms(userId, friendId);
     }
+
+
 }

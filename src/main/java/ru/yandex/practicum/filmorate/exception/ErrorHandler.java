@@ -12,14 +12,14 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> notFoundException(final NotFoundException e) {
-        return Map.of("Error", e.getMessage());
+    public Map<String, String> notFoundException(final  NotFoundException e) {
+        return Map.of("error", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> elementNotExistsException(final ElementNotExistsException e) {
-        return Map.of("Error", e.getMessage());
+    public Map<String, String> elementNotExistsException(final  ElementNotExistsException e) {
+        return Map.of("error", e.getMessage());
     }
 
     @ExceptionHandler

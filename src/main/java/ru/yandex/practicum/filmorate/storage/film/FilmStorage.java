@@ -24,6 +24,12 @@ public interface FilmStorage {
 
     void addGenreForFilm(Long id, Long genreId);
 
+    void addDirectorForFilm(Long id, Long directorId);
+
+    List<Film> getDirectorsFilmSortByYear(Long id);
+
+    List<Film> getDirectorsFilmSortByLikes(Long id);
+
     List<Film> findCommonFilms(Long userId, Long friendId);
 
 }

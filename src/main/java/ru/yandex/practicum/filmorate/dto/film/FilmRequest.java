@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.annotation.MinimalDate;
+import ru.yandex.practicum.filmorate.dto.director.DirectorRequest;
 import ru.yandex.practicum.filmorate.dto.genre.GenreRequest;
 import ru.yandex.practicum.filmorate.dto.rating.RatingRequest;
 
@@ -24,4 +25,5 @@ public class FilmRequest {
     private Integer duration;
     private RatingRequest mpa;
     private List<GenreRequest> genres;
+    private List<DirectorRequest> directors;
 }

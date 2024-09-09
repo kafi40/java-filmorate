@@ -5,6 +5,8 @@ import lombok.Data;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.dto.rating.RatingDto;
 
+import ru.yandex.practicum.filmorate.model.Director;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +21,10 @@ public class FilmDto {
     private Integer duration;
     private RatingDto mpa;
     private List<GenreDto> genres;
+    private List<Director> directors;
 
     public FilmDto() {
         this.genres = new ArrayList<>();
+        this.directors = new ArrayList<>();
     }
 }
