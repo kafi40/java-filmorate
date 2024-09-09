@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.director.DirectorFromFilmRequest;
+import ru.yandex.practicum.filmorate.dto.director.DirectorRequest;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmRequest;
 import ru.yandex.practicum.filmorate.dto.genre.GenreRequest;
@@ -155,7 +155,7 @@ public class FilmService {
         }
     }
 
-    private Set<Director> saveDirector(Long id, List<DirectorFromFilmRequest> directors) {
+    private Set<Director> saveDirector(Long id, List<DirectorRequest> directors) {
         if (directors != null) {
             directors.forEach(d -> {
                 try {

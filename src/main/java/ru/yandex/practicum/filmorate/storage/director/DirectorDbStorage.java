@@ -13,17 +13,18 @@ import java.util.Set;
 
 @Repository
 public class DirectorDbStorage extends BaseDbStorage<Director> implements DirectorStorage {
-    private static final String INSERT_QUERY = "INSERT INTO director(name) VALUES (?)";
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM director WHERE id = ?";
-    private static final String FIND_ALL_QUERY = "SELECT * FROM director";
-    private static final String DELETE_QUERY = "DELETE FROM director WHERE id = ?";
-    private static final String UPDATE_QUERY = " UPDATE director SET name = ? WHERE id = ?";
-    private static final String FIND_DIRECTOR_FOR_FILM = """
-            SELECT d.id, d.name FROM director AS d
-            JOIN film_director AS fd ON d.id = fd.director_id
-            JOIN film AS f ON fd.film_id = f.id
-            WHERE f.id = ?
-            """;
+    private static final String INSERT_QUERY = "INSERT INTO directors(name) VALUES (?)";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM directors WHERE id = ?";
+    private static final String FIND_ALL_QUERY = "SELECT * FROM directors";
+    private static final String DELETE_QUERY = "DELETE FROM directors WHERE id = ?";
+    private static final String UPDATE_QUERY = " UPDATE directors SET name = ? WHERE id = ?";
+    private static final String FIND_DIRECTOR_FOR_FILM =
+            """
+                    SELECT d.id, d.name FROM directors AS d
+                    JOIN film_directors AS fd ON d.id = fd.director_id
+                    JOIN films AS f ON fd.film_id = f.id
+                    WHERE f.id = ?
+                    """;
 
     public DirectorDbStorage(JdbcTemplate jdbc, RowMapper<Director> mapper) {
         super(jdbc, mapper);
