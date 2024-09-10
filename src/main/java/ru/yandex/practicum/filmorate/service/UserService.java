@@ -2,14 +2,20 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.user.UserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
+import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,9 +24,15 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
+    private final GenreStorage genreStorage;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
+                       @Qualifier("filmDbStorage") FilmStorage filmStorage,
+                       @Qualifier("genreDbStorage") GenreStorage genreStorage) {
         this.userStorage = userStorage;
+        this.filmStorage = filmStorage;
+        this.genreStorage = genreStorage;
     }
 
     public UserDto get(Long id) {
@@ -106,4 +118,28 @@ public class UserService {
         }
     }
 
+    public List<FilmDto> getRecommendations(Long userId) {
+        List<Long> bestRepetitionUserIds = userStorage.getBestRepetitionUserIds(userId);
+
+        if (bestRepetitionUserIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<FilmDto> recommendationsFilms = bestRepetitionUserIds.stream()
+                .flatMap(userIdBestRep -> filmStorage.getRecommendations(userId, userIdBestRep).stream())
+                .map(FilmMapper::mapToFilmDto)
+                .toList();
+
+        if (!recommendationsFilms.isEmpty()) {
+            recommendationsFilms.stream()
+                    .filter(filmDto -> !genreStorage.getForFilm(filmDto.getId()).isEmpty())
+                    .forEach(filmDto -> filmDto.setGenres(
+                            genreStorage.getForFilm(filmDto.getId()).stream()
+                                    .map(GenreMapper::mapToGenreDto)
+                                    .toList()
+                            )
+                    );
+        }
+        return recommendationsFilms;
+    }
 }
