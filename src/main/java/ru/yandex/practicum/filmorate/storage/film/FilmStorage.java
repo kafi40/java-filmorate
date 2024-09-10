@@ -36,4 +36,5 @@ public interface FilmStorage {
 
     List<Film> getSearchDirector(String query);
 
+    List<Film> getRecommendations(long userId, long bestRepetitionUserId);
 }

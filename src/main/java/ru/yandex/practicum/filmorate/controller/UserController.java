@@ -4,11 +4,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.user.UserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -62,5 +64,10 @@ public class UserController {
     @DeleteMapping("/{id}/friends/{friendsId}")
     public boolean deleteFriend(@PathVariable Long id, @PathVariable Long friendsId) {
         return userService.deleteFriend(id, friendsId);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public List<FilmDto> getRecommendations(@PathVariable(value = "id") Long userId) {
+        return userService.getRecommendations(userId);
     }
 }

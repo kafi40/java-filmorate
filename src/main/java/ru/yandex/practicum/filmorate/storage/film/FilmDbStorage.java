@@ -120,6 +120,15 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     WHERE d.name LIKE CONCAT('%',?,'%')
                     """;
 
+    private static final String GET_RECOMMENDATIONS =
+            """
+                    SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id FROM films AS f
+                    LEFT JOIN ratings AS r ON f.rating_id = r.id
+                    RIGHT JOIN (SELECT film_id FROM user_films_liked WHERE user_id = ?
+                    EXCEPT SELECT film_id FROM user_films_liked WHERE user_id = ?)
+                    AS liked_films ON liked_films.film_id = f.id
+                    """;
+
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
     }
@@ -208,6 +217,11 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public List<Film> findCommonFilms(Long userId, Long friendId) {
         return jdbc.query(FIND_COMMON_FILMS, mapper, userId, friendId);
+    }
+
+    @Override
+    public List<Film> getRecommendations(long userId, long bestRepetitionUserId) {
+        return findMany(GET_RECOMMENDATIONS, bestRepetitionUserId, userId);
     }
 
     @Override

@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.dto.director.DirectorRequest;
 import ru.yandex.practicum.filmorate.model.Director;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DirectorMapper {
+public final class DirectorMapper {
     public static DirectorDto mapToDirectorDto(Director director) {
         DirectorDto directorDto = new DirectorDto();
         directorDto.setId(director.getId());
