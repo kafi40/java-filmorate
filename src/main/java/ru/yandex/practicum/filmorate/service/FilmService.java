@@ -139,6 +139,18 @@ public class FilmService {
                 .orElseThrow(() -> new ValidationException("ID", "Жанр с ID " + id + " не найден"));
     }
 
+    public List<FilmDto> getSearchFilm(String query) {
+        return filmStorage.getSearchFilm(query).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<FilmDto> getSearchDirector(String query) {
+        return filmStorage.getSearchDirector(query).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
+
     private Set<Genre> saveGenre(Long id, List<GenreRequest> genres) {
         if (genres != null) {
             genres.forEach(g -> {

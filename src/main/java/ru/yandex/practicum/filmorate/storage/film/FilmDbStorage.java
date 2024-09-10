@@ -109,6 +109,19 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     INSERT INTO film_directors(film_id, director_id) VALUES (?, ?)
                     """;
 
+    private static final String SEARCH_FILM =
+            """
+                    SELECT * FROM films WHERE name LIKE CONCAT('%',?,'%') 
+                    """;
+
+    private static final String SEARCH_FILM_DIRECTOR =
+            """
+                    SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
+                    FROM films f
+                    JOIN film_directors fd ON f.id = fd.film_id
+                    JOIN directors d ON fd.director_id = d.id
+                    WHERE d.name LIKE CONCAT('%',?,'%')
+                    """;
 
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -203,5 +216,13 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public void addDirectorForFilm(Long id, Long directorId) {
         jdbc.update(ADD_DIRECTOR_FOR_FILM, id, directorId);
+    }
+
+    @Override
+    public List<Film> getSearchFilm(String query){return jdbc.query(SEARCH_FILM, mapper, query);}
+
+    @Override
+    public List<Film> getSearchDirector(String query){
+        return jdbc.query(SEARCH_FILM_DIRECTOR, mapper, query);
     }
 }
