@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.repository.impl;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -13,10 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RatingRepositoryImpl extends BaseRepository<Rating> implements RatingRepository {
-    static String FIND_BY_ID_QUERY = "SELECT * FROM ratings WHERE id = ?";
-    static String FIND_ALL_QUERY = "SELECT * FROM ratings";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM ratings WHERE id = ?";
+    private static final String FIND_ALL_QUERY = "SELECT * FROM ratings";
 
     public RatingRepositoryImpl(JdbcTemplate jdbc, RowMapper<Rating> mapper) {
         super(jdbc, mapper);

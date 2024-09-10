@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.repository.impl;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -12,15 +10,14 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.*;
 
 @Repository
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserRepositoryImpl extends BaseRepository<User> implements UserRepository {
-    static String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE id = ?";
-    static String FIND_ALL_QUERY = "SELECT * FROM users";
-    static String INSERT_QUERY = "INSERT INTO users(email, login, name, birthday)" +
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE id = ?";
+    private static final String FIND_ALL_QUERY = "SELECT * FROM users";
+    private static final String INSERT_QUERY = "INSERT INTO users(email, login, name, birthday)" +
             "VALUES (?, ?, ?, ?)";
-    static String UPDATE_QUERY = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
-    static String DELETE_QUERY = "DELETE FROM users WHERE id = ?";
-    static String FIND_FRIENDS_QUERY =
+    private static final String UPDATE_QUERY = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
+    private static final String DELETE_QUERY = "DELETE FROM users WHERE id = ?";
+    private static final String FIND_FRIENDS_QUERY =
             """
                     SELECT * FROM "users" WHERE "id" IN (
                     SELECT "friend_id" FROM "user_friends"
@@ -30,7 +27,7 @@ public class UserRepositoryImpl extends BaseRepository<User> implements UserRepo
                     WHERE "friend_id" = ? AND "is_accept" = true)
                     """;
 
-    static String FIND_COMMON_FRIENDS =
+    private static final String FIND_COMMON_FRIENDS =
             """
                     SELECT * FROM "users" WHERE "id" IN (
                     SELECT * FROM (
@@ -43,28 +40,28 @@ public class UserRepositoryImpl extends BaseRepository<User> implements UserRepo
                     HAVING COUNT(*) > 1)
                     """;
 
-    static String ADD_FRIEND_QUERY =
+    private static final String ADD_FRIEND_QUERY =
             """
                     INSERT INTO "user_friends"("user_id", "friend_id", "is_accept")
                     VALUES (?, ?, false)
                     """;
-    static String DELETE_FRIEND_QUERY =
+    private static final String DELETE_FRIEND_QUERY =
             """
                     DELETE FROM "user_friends" WHERE "user_id" = ? AND "friend_id" = ?
                     """;
-    static String IS_FRIEND_REQUEST =
+    private static final String IS_FRIEND_REQUEST =
             """
                     SELECT * FROM "user_friends" WHERE "friend_id" = ? AND "user_id" = ? AND "is_accept" = false
                     """;
-    static String ACCEPT_REQUEST =
+    private static final String ACCEPT_REQUEST =
             """
                     UPDATE "user_friends" SET "is_accept" = true WHERE "user_id" = ? AND "friend_id" = ?
                     """;
-    static String IS_FRIEND =
+    private static final String IS_FRIEND =
             """
                     SELECT * FROM "user_friends" WHERE "friend_id" = ? AND "user_id" = ? AND "is_accept" = true
                     """;
-    static String REMOVE_REQUEST =
+    private static final String REMOVE_REQUEST =
             """
                     UPDATE "user_friends" SET "is_accept" = false WHERE "friend_id" = ? AND "user_id" = ?
                     """;

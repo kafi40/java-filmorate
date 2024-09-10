@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.repository.impl;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -13,16 +11,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepository {
-    static String FIND_BY_ID_QUERY = "SELECT * FROM films WHERE id = ?";
-    static String FIND_ALL_QUERY = "SELECT * FROM films";
-    static String INSERT_QUERY = "INSERT INTO films(name, description, release_date, duration, rating_id)" +
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM films WHERE id = ?";
+    private static final String FIND_ALL_QUERY = "SELECT * FROM films";
+    private static final String INSERT_QUERY = "INSERT INTO films(name, description, release_date, duration, rating_id)" +
             "VALUES (?, ?, ?, ?, ?)";
-    static String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, " +
+    private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, " +
             "rating_id = ? WHERE id = ?";
-    static String DELETE_QUERY = "DELETE FROM films WHERE id = ?";
-    static String FIND_TOP_FILMS =
+    private static final String DELETE_QUERY = "DELETE FROM films WHERE id = ?";
+    private static final String FIND_TOP_FILMS =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" f
                     LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
@@ -30,7 +27,7 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
                     ORDER BY COUNT(*) DESC
                     LIMIT ?
                     """;
-    static String FIND_TOP_FILMS_BY_YEAR_AND_GENRE =
+    private static final String FIND_TOP_FILMS_BY_YEAR_AND_GENRE =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" AS f
                     LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
@@ -40,7 +37,7 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
                     ORDER BY COUNT(*) DESC
                     LIMIT ?;
                     """;
-    static String FIND_TOP_FILMS_BY_YEAR =
+    private static final String FIND_TOP_FILMS_BY_YEAR =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" AS f
                     LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
@@ -49,7 +46,7 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
                     ORDER BY COUNT(*) DESC
                     LIMIT ?;
                     """;
-    static String FIND_TOP_FILMS_BY_GENRE =
+    private static final String FIND_TOP_FILMS_BY_GENRE =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" AS f
                     LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
@@ -59,19 +56,19 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
                     ORDER BY COUNT(*) DESC
                     LIMIT ?;
                     """;
-    static String ADD_LIKE =
+    private static final String ADD_LIKE =
             """
                     INSERT INTO "user_films_liked"("user_id", "film_id") VALUES (?, ?)
                     """;
-    static String DELETE_LIKE =
+    private static final String DELETE_LIKE =
             """
                     DELETE FROM "user_films_liked" WHERE "user_id" = ? AND "film_id" = ?
                     """;
-    static String ADD_GENRE_FOR_FILM =
+    private static final String ADD_GENRE_FOR_FILM =
             """
                     INSERT INTO "film_genres"("film_id", "genre_id") VALUES (?, ?)
                     """;
-    static String FIND_COMMON_FILMS =
+    private static final String FIND_COMMON_FILMS =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" f
                     LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
@@ -83,7 +80,7 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
                     GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
                     ORDER BY COUNT(*) DESC
                     """;
-    static String FIND_FILMS_FOR_DIRECTOR_SORT_BY_YEAR_QUERY =
+    private static final String FIND_FILMS_FOR_DIRECTOR_SORT_BY_YEAR_QUERY =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id"
                     FROM "films" AS f
@@ -92,7 +89,7 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
                     GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
                     ORDER BY f."release_date"
                     """;
-    static String FIND_FILMS_FOR_DIRECTOR_SORT_BY_LIKES_QUERY =
+    private static final String FIND_FILMS_FOR_DIRECTOR_SORT_BY_LIKES_QUERY =
             """
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id"
                     FROM "films" AS f
@@ -102,7 +99,7 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
                     GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
                     ORDER BY COUNT(ufl."user_id") DESC;
                     """;
-    static String ADD_DIRECTOR_FOR_FILM =
+    private static final String ADD_DIRECTOR_FOR_FILM =
             """
                     INSERT INTO "film_directors"("film_id", "director_id") VALUES (?, ?)
                     """;

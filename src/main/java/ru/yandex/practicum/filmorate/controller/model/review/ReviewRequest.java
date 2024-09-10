@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class ReviewRequest {
     private Long reviewId;
-    @NotBlank
+    @NotBlank(message = "Поле не может быть пустым")
     private String content;
     private Boolean isPositive;
     private Long userId;
