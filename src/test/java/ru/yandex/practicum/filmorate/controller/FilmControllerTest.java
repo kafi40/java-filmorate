@@ -10,7 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.impl.FilmServiceImpl;
 
 import java.time.LocalDate;
 
@@ -19,7 +19,7 @@ public class FilmControllerTest {
     private final MockMvc mvc;
     private final ObjectMapper objectMapper;
     @MockBean
-    FilmService service;
+    FilmServiceImpl service;
 
     @Autowired
     public FilmControllerTest(MockMvc mvc, ObjectMapper objectMapper) {

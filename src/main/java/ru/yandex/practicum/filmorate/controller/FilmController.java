@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.film.FilmDto;
-import ru.yandex.practicum.filmorate.dto.film.FilmRequest;
+import ru.yandex.practicum.filmorate.controller.model.film.FilmDto;
+import ru.yandex.practicum.filmorate.controller.model.film.FilmRequest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -17,10 +19,11 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/films")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FilmController {
     private static final String TITLE = "title";
     private static final String DIRECTOR = "director";
-    private final FilmService filmService;
+    FilmService filmService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -66,7 +69,6 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-
     public List<FilmDto> getFilmsTop(@RequestParam(defaultValue = "10") int count,
                                      @RequestParam(required = false) Long genreId,
                                      @RequestParam(required = false) Integer year) {
@@ -110,6 +112,4 @@ public class FilmController {
         }
         return filmService.getCommonFilms(userId, friendId);
     }
-
-
 }
