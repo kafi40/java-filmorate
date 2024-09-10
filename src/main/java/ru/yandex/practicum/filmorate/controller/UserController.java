@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.film.FilmDto;
-import ru.yandex.practicum.filmorate.dto.user.UserRequest;
-import ru.yandex.practicum.filmorate.dto.user.UserDto;
+import ru.yandex.practicum.filmorate.controller.model.film.FilmDto;
+import ru.yandex.practicum.filmorate.controller.model.user.UserRequest;
+import ru.yandex.practicum.filmorate.controller.model.user.UserDto;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
@@ -16,9 +18,9 @@ import java.util.Set;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
-
-    private final UserService userService;
+    UserService userService;
 
     @GetMapping
     public Collection<UserDto> getUsers() {

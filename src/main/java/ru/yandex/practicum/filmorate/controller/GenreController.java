@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
+import ru.yandex.practicum.filmorate.controller.model.genre.GenreDto;
 import ru.yandex.practicum.filmorate.service.GenreService;
 
 import java.util.List;
@@ -11,8 +13,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/genres")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GenreController {
-    private final GenreService genreService;
+    GenreService genreService;
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
