@@ -42,9 +42,9 @@ public class UserRepositoryImpl extends BaseRepository<User> implements UserRepo
 
     private static final String ADD_FRIEND_QUERY =
             """
-                    INSERT INTO "user_friends"("user_id", "friend_id", "is_accept")
-                    VALUES (?, ?, false)
-                    """;
+            INSERT INTO "user_friends"("user_id", "friend_id", "is_accept")
+            VALUES (?, ?, false)
+            """;
     private static final String DELETE_FRIEND_QUERY =
             """
                     DELETE FROM "user_friends" WHERE "user_id" = ? AND "friend_id" = ?
