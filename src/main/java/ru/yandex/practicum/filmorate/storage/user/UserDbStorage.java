@@ -161,7 +161,7 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     }
 
     @Override
-    public List<Long> getBestRepetitionUserIds(int userId) {
+    public List<Long> getBestRepetitionUserIds(Long userId) {
         return jdbc.queryForList(GET_BEST_REPETITION_USER, Long.class, userId);
     }
 }
