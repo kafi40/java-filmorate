@@ -122,12 +122,12 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     private static final String GET_RECOMMENDATIONS =
             """
-            SELECT film.id, film.name, film.description, film.release_date, film.duration, film.rating_id FROM film
-            LEFT JOIN rating ON film.rating_id = rating.id
-            RIGHT JOIN (SELECT film_id FROM user_film_liked WHERE user_id = ?
-            EXCEPT SELECT film_id FROM user_film_liked WHERE user_id = ?)
-            AS liked_films ON liked_films.film_id = film.id
-            """;
+                    SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id FROM films AS f
+                    LEFT JOIN ratings AS r ON f.rating_id = r.id
+                    RIGHT JOIN (SELECT film_id FROM user_films_liked WHERE user_id = ?
+                    EXCEPT SELECT film_id FROM user_films_liked WHERE user_id = ?)
+                    AS liked_films ON liked_films.film_id = f.id
+                    """;
 
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
