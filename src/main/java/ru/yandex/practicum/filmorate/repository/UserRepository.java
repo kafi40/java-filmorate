@@ -32,4 +32,6 @@ public interface UserRepository extends Repository {
     boolean isFriend(Object... params);
 
     boolean removeRequest(Object... params);
+
+    List<Long> getBestRepetitionUserIds(Long userId);
 }

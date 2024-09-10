@@ -66,6 +66,15 @@ public class UserRepositoryImpl extends BaseRepository<User> implements UserRepo
                     UPDATE "user_friends" SET "is_accept" = false WHERE "friend_id" = ? AND "user_id" = ?
                     """;
 
+    private static final String GET_BEST_REPETITION_USER =
+            """
+            SELECT ufl2.user_id FROM user_films_liked AS ufl1
+            JOIN user_films_liked AS ufl2 ON ufl1.film_id = ufl2.film_id
+            WHERE ufl1.user_id = ? AND ufl1.user_id<>ufl2.user_id
+            GROUP BY ufl1.user_id , ufl2.user_id
+            ORDER BY COUNT(ufl1.film_id) DESC LIMIT 1
+            """;
+
     public UserRepositoryImpl(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
     }
@@ -151,5 +160,10 @@ public class UserRepositoryImpl extends BaseRepository<User> implements UserRepo
     @Override
     public boolean removeRequest(Object... params) {
         return jdbc.update(REMOVE_REQUEST, params) > 1;
+    }
+
+    @Override
+    public List<Long> getBestRepetitionUserIds(Long userId) {
+        return jdbc.queryForList(GET_BEST_REPETITION_USER, Long.class, userId);
     }
 }

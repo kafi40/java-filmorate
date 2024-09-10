@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.controller.model.user.UserDto;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -64,5 +65,10 @@ public class UserController {
     @DeleteMapping("/{id}/friends/{friendsId}")
     public boolean deleteFriend(@PathVariable Long id, @PathVariable Long friendsId) {
         return userService.deleteFriend(id, friendsId);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public List<FilmDto> getRecommendations(@PathVariable(value = "id") Long userId) {
+        return userService.getRecommendations(userId);
     }
 }
