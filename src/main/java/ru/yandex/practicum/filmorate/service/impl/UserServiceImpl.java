@@ -4,16 +4,22 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.controller.mapper.FilmMapper;
+import ru.yandex.practicum.filmorate.controller.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.controller.model.film.FilmDto;
 import ru.yandex.practicum.filmorate.controller.model.user.UserRequest;
 import ru.yandex.practicum.filmorate.controller.model.user.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.controller.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.repository.FilmRepository;
+import ru.yandex.practicum.filmorate.repository.GenreRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.util.Util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,6 +29,8 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
     UserRepository userRepository;
+    FilmRepository filmRepository;
+    GenreRepository genreRepository;
 
     public UserDto get(Long id) {
         return userRepository.get(id)
@@ -94,5 +102,30 @@ public class UserServiceImpl implements UserService {
             return userRepository.removeRequest(id, otherId);
         }
         return userRepository.deleteFriend(id, otherId);
+    }
+
+    public List<FilmDto> getRecommendations(Long userId) {
+        List<Long> bestRepetitionUserIds = userRepository.getBestRepetitionUserIds(userId);
+
+        if (bestRepetitionUserIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<FilmDto> recommendationsFilms = bestRepetitionUserIds.stream()
+                .flatMap(userIdBestRep -> filmRepository.getRecommendations(userId, userIdBestRep).stream())
+                .map(FilmMapper::mapToFilmDto)
+                .toList();
+
+        if (!recommendationsFilms.isEmpty()) {
+            recommendationsFilms.stream()
+                    .filter(filmDto -> !genreRepository.getForFilm(filmDto.getId()).isEmpty())
+                    .forEach(filmDto -> filmDto.setGenres(
+                                    genreRepository.getForFilm(filmDto.getId()).stream()
+                                            .map(GenreMapper::mapToGenreDto)
+                                            .toList()
+                            )
+                    );
+        }
+        return recommendationsFilms;
     }
 }

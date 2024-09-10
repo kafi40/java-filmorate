@@ -68,11 +68,11 @@ public class UserRepositoryImpl extends BaseRepository<User> implements UserRepo
 
     private static final String GET_BEST_REPETITION_USER =
             """
-            SELECT ufl2.user_id FROM user_films_liked AS ufl1
-            JOIN user_films_liked AS ufl2 ON ufl1.film_id = ufl2.film_id
-            WHERE ufl1.user_id = ? AND ufl1.user_id<>ufl2.user_id
-            GROUP BY ufl1.user_id , ufl2.user_id
-            ORDER BY COUNT(ufl1.film_id) DESC LIMIT 1
+            SELECT ufl2."user_id" FROM "user_films_liked" AS ufl1
+            JOIN "user_films_liked" AS ufl2 ON ufl1."film_id" = ufl2."film_id"
+            WHERE ufl1."user_id" = ? AND ufl1."user_id"<>ufl2."user_id"
+            GROUP BY ufl1."user_id" , ufl2."user_id"
+            ORDER BY COUNT(ufl1."film_id") DESC LIMIT 1
             """;
 
     public UserRepositoryImpl(JdbcTemplate jdbc, RowMapper<User> mapper) {

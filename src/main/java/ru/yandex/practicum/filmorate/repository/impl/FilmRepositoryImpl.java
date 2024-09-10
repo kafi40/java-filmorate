@@ -91,28 +91,31 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
                     """;
     private static final String FIND_FILMS_FOR_DIRECTOR_SORT_BY_LIKES_QUERY =
             """
-                    SELECT "id", "name", "description", "release_date", "duration", "rating_id"
+                    SELECT f."id", f."name", f."description", f."release_date", f."duration", f."rating_id"
                     FROM "films" AS f
                     LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
                     JOIN "film_directors" fd ON f."id" = fd."film_id"
                     WHERE fd."director_id" = ?
                     GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
-                    ORDER BY COUNT(ufl."user_id") DESC;
+                    ORDER BY COUNT(ufl."user_id") DESC ;
                     """;
     private static final String ADD_DIRECTOR_FOR_FILM =
             """
                     INSERT INTO "film_directors"("film_id", "director_id") VALUES (?, ?)
                     """;
 
-    private static final String SEARCH_FILM = "SELECT * FROM films WHERE name LIKE CONCAT('%',?,'%');";
+    private static final String SEARCH_FILM =
+            """
+                    SELECT * FROM "films" WHERE "name" LIKE CONCAT('%',?,'%');
+                    """;
 
     private static final String SEARCH_FILM_DIRECTOR =
             """
-                    SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
-                    FROM films f
-                    JOIN film_directors fd ON f.id = fd.film_id
-                    JOIN directors d ON fd.director_id = d.id
-                    WHERE d.name LIKE CONCAT('%',?,'%')
+                    SELECT f."id", f."name", f."description", f."release_date", f."duration", f."rating_id"
+                    FROM "films" AS f
+                    JOIN "film_directors" AS fd ON f."id" = fd."film_id"
+                    JOIN "directors" AS d ON fd."director_id" = d."id"
+                    WHERE d."name" LIKE CONCAT('%',?,'%')
                     """;
 
     private static final String GET_RECOMMENDATIONS =

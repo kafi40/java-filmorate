@@ -115,6 +115,20 @@ public class FilmServiceImpl implements FilmService {
     }
 
 
+    public List<FilmDto> getSearchFilm(String query) {
+        return filmRepository.getSearchFilm(query).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<FilmDto> getSearchDirector(String query) {
+        return filmRepository.getSearchDirector(query).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
+
+
+
     private void addRating(Film film, FilmRequest request) {
         Long ratingId = request.getMpa().getId();
         Rating mpa = ratingRepository.get(ratingId)

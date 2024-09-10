@@ -5,7 +5,6 @@ import ru.yandex.practicum.filmorate.controller.model.film.FilmRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public interface FilmService extends BaseService<FilmDto, FilmRequest> {
@@ -29,16 +28,8 @@ public interface FilmService extends BaseService<FilmDto, FilmRequest> {
     List<FilmDto> getDirectorsFilmsByYear(Long id);
 
     List<FilmDto> getDirectorsFilmsByLikes(Long id);
+
+    List<FilmDto> getSearchFilm(String query);
+
+    List<FilmDto> getSearchDirector(String query);
 }
-
-    public List<FilmDto> getSearchFilm(String query) {
-        return filmStorage.getSearchFilm(query).stream()
-                .map(FilmMapper::mapToFilmDto)
-                .collect(Collectors.toList());
-    }
-
-    public List<FilmDto> getSearchDirector(String query) {
-        return filmStorage.getSearchDirector(query).stream()
-                .map(FilmMapper::mapToFilmDto)
-                .collect(Collectors.toList());
-    }
