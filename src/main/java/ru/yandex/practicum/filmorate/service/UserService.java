@@ -15,5 +15,6 @@ public interface UserService extends BaseService<UserDto, UserRequest> {
     boolean addFriend(Long id, Long otherId);
 
     boolean deleteFriend(Long id, Long otherId);
+
     List<FilmDto> getRecommendations(Long userId);
 }
