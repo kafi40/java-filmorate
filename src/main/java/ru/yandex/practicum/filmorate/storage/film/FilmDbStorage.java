@@ -15,14 +15,14 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String FIND_ALL_QUERY = "SELECT * FROM films";
     private static final String INSERT_QUERY =
             """
-            INSERT INTO films(name, description, release_date, duration, rating_id)
-                                               VALUES (?, ?, ?, ?, ?)
-            """;
+                    INSERT INTO films(name, description, release_date, duration, rating_id)
+                                                       VALUES (?, ?, ?, ?, ?)
+                    """;
     private static final String UPDATE_QUERY =
             """
-            UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?,
-                                               rating_id = ? WHERE id = ?
-            """;
+                    UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?,
+                                                       rating_id = ? WHERE id = ?
+                    """;
     private static final String DELETE_QUERY = "DELETE FROM films WHERE id = ?";
     private static final String FIND_TOP_FILMS =
             """
@@ -63,28 +63,28 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     """;
     private static final String ADD_LIKE =
             """
-            INSERT INTO "user_films_liked"("user_id", "film_id") VALUES (?, ?)
-            """;
+                    INSERT INTO "user_films_liked"("user_id", "film_id") VALUES (?, ?)
+                    """;
     private static final String DELETE_LIKE =
             """
-            DELETE FROM "user_films_liked" WHERE "user_id" = ? AND "film_id" = ?
-            """;
+                    DELETE FROM "user_films_liked" WHERE "user_id" = ? AND "film_id" = ?
+                    """;
     private static final String ADD_GENRE_FOR_FILM =
             """
                     INSERT INTO "film_genres"("film_id", "genre_id") VALUES (?, ?)
                     """;
     private static final String FIND_COMMON_FILMS =
             """
-            SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" f
-            LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
-            WHERE f."id" IN (
-            SELECT "film_id" FROM "user_films_liked"
-            WHERE "user_id" IN (?, ?)
-            GROUP BY "film_id"
-            HAVING COUNT(*) > 1)
-            GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
-            ORDER BY COUNT(*) DESC
-            """;
+                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" f
+                    LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
+                    WHERE f."id" IN (
+                    SELECT "film_id" FROM "user_films_liked"
+                    WHERE "user_id" IN (?, ?)
+                    GROUP BY "film_id"
+                    HAVING COUNT(*) > 1)
+                    GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
+                    ORDER BY COUNT(*) DESC
+                    """;
     private static final String FIND_FILMS_FOR_DIRECTOR_SORT_BY_YEAR_QUERY =
             """
                     SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
@@ -109,6 +109,16 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     INSERT INTO film_directors(film_id, director_id) VALUES (?, ?)
                     """;
 
+    private static final String SEARCH_FILM = "SELECT * FROM films WHERE name LIKE CONCAT('%',?,'%');";
+
+    private static final String SEARCH_FILM_DIRECTOR =
+            """
+                    SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
+                    FROM films f
+                    JOIN film_directors fd ON f.id = fd.film_id
+                    JOIN directors d ON fd.director_id = d.id
+                    WHERE d.name LIKE CONCAT('%',?,'%')
+                    """;
 
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -203,5 +213,15 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public void addDirectorForFilm(Long id, Long directorId) {
         jdbc.update(ADD_DIRECTOR_FOR_FILM, id, directorId);
+    }
+
+    @Override
+    public List<Film> getSearchFilm(String query) {
+        return jdbc.query(SEARCH_FILM, mapper, query);
+    }
+
+    @Override
+    public List<Film> getSearchDirector(String query) {
+        return jdbc.query(SEARCH_FILM_DIRECTOR, mapper, query);
     }
 }

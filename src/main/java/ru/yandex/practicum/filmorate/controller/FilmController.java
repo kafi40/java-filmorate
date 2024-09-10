@@ -12,11 +12,14 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/films")
 @RequiredArgsConstructor
 public class FilmController {
+    private static final String TITLE = "title";
+    private static final String DIRECTOR = "director";
     private final FilmService filmService;
 
     @GetMapping
@@ -31,6 +34,20 @@ public class FilmController {
         return filmService.get(id);
     }
 
+    @GetMapping("/search")
+    public List<FilmDto> searchFilms(@RequestParam("query") String query, @RequestParam("by") String by) {
+        if (by.equals(TITLE)) {
+            return filmService.getSearchFilm(query);
+        } else if (by.equals(DIRECTOR)) {
+            return filmService.getSearchDirector(query);
+        } else if (by.equals(TITLE + ',' + DIRECTOR) || by.equals(DIRECTOR + ',' + TITLE)) {
+            List<FilmDto> searchFilm = filmService.getSearchFilm(query);
+            searchFilm.addAll(filmService.getSearchDirector(query));
+            return searchFilm.stream().distinct().collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
