@@ -33,5 +33,5 @@ public interface UserStorage {
 
     boolean removeRequest(Object... params);
 
-    List<Long> getBestRepetitionUserIds(int userId);
+    List<Long> getBestRepetitionUserIds(Long userId);
 }
