@@ -24,6 +24,8 @@ public interface FilmRepository extends Repository {
 
     void addGenreForFilm(Long id, Long genreId);
 
+    void deleteGenreForFilm(Long id, Long genreId);
+
     void addDirectorForFilm(Long id, Long directorId);
 
     List<Film> getDirectorsFilmSortByYear(Long id);

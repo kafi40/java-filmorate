@@ -15,9 +15,9 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM films WHERE id = ?";
     private static final String FIND_ALL_QUERY = "SELECT * FROM films";
     private static final String INSERT_QUERY = "INSERT INTO films(name, description, release_date, duration, rating_id)" +
-            "VALUES (?, ?, ?, ?, ?)";
+                                               "VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, " +
-            "rating_id = ? WHERE id = ?";
+                                               "rating_id = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM films WHERE id = ?";
     private static final String FIND_TOP_FILMS =
             """
@@ -32,7 +32,10 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" AS f
                     LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
                     WHERE EXTRACT(YEAR FROM f."release_date") = ? AND f."id" IN
-                    (SELECT "film_id" FROM "film_genres" AS fg WHERE fg."genre_id" = ?)
+                    (SELECT "film_id"
+                     FROM "film_genres" AS fg 
+                     WHERE fg."genre_id" = ?
+                     )
                     GROUP BY f."id"
                     ORDER BY COUNT(*) DESC
                     LIMIT ?;
@@ -51,7 +54,7 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
                     SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" AS f
                     LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
                     WHERE f."id" IN
-                    (SELECT "film_id" FROM "film_genres" AS fg WHERE fg."genre_id" = ?)
+                    (SELECT "film_id" FROM "film_genres" AS fg WHERE fg."genre_id" = ? GROUP BY "film_id")
                     GROUP BY f."id"
                     ORDER BY COUNT(*) DESC
                     LIMIT ?;
@@ -67,6 +70,10 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
     private static final String ADD_GENRE_FOR_FILM =
             """
                     INSERT INTO "film_genres"("film_id", "genre_id") VALUES (?, ?)
+                    """;
+    private static final String DELETE_GENRE_FOR_FILM =
+            """
+                    DELETE "film_genres" WHERE "film_id" = ? 
                     """;
     private static final String FIND_COMMON_FILMS =
             """
@@ -210,6 +217,11 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
     @Override
     public void addGenreForFilm(Long id, Long genreId) {
         jdbc.update(ADD_GENRE_FOR_FILM, id, genreId);
+    }
+
+    @Override
+    public void deleteGenreForFilm(Long id, Long genreId) {
+        jdbc.update(DELETE_GENRE_FOR_FILM, id);
     }
 
     @Override
