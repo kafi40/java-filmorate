@@ -79,7 +79,6 @@ public class FilmController {
             throw new ValidationException("year", "Некорректный год. Должен быть в пределах 1895 до нашего времени");
         }
         return filmService.getTopFilms(count, genreId, year);
-
     }
 
 
