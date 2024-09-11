@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface ReviewRepository {
     Optional<Review> findOne(Long id);
 
+    List<Review> findMany();
+
     Review save(Review review);
 
     Review update(Review newReview);

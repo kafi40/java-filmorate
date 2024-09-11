@@ -25,6 +25,12 @@ public class ReviewController {
         return reviewService.get(id);
     }
 
+//    @GetMapping
+//    @ResponseStatus(HttpStatus.OK)
+//    public List<ReviewDto> getReviews() {
+//        return reviewService.getAll();
+//    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReviewDto createReview(@Valid @RequestBody ReviewRequest request) {
@@ -43,7 +49,7 @@ public class ReviewController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ReviewDto> getReview(@RequestParam Long filmId, @RequestParam(defaultValue = "10") int count) {
+    public List<ReviewDto> getReviews(@RequestParam(required = false) Long filmId, @RequestParam(defaultValue = "10") int count) {
         return reviewService.getFilmReviews(filmId, count);
     }
 

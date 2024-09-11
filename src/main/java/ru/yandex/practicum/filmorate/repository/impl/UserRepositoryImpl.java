@@ -80,7 +80,7 @@ public class UserRepositoryImpl extends BaseRepository<User> implements UserRepo
     }
 
     @Override
-    public Optional<User> get(Long id) {
+    public Optional<User> findById(Long id) {
         return findOne(FIND_BY_ID_QUERY, id);
     }
 

@@ -20,7 +20,7 @@ public class GenreServiceImpl implements GenreService {
     GenreRepository genreRepository;
 
     public GenreDto get(Long id) {
-        return genreRepository.get(id)
+        return genreRepository.findById(id)
                 .map(GenreMapper::mapToGenreDto)
                 .orElseThrow(() -> new NotFoundException("Жанр с ID = " + id + " не найден"));
     }

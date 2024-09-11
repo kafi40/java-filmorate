@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface UserRepository extends Repository {
-    Optional<User> get(Long id);
+    Optional<User> findById(Long id);
 
     List<User> getAll();
 

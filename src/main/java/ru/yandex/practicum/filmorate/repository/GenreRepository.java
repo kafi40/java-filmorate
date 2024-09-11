@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface GenreRepository extends Repository {
-    Optional<Genre> get(Long id);
+    Optional<Genre> findById(Long id);
 
     List<Genre> getAll();
 

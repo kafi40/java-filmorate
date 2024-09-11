@@ -31,7 +31,7 @@ public class GenreRepositoryImpl extends BaseRepository<Genre> implements GenreR
     }
 
     @Override
-    public Optional<Genre> get(Long id) {
+    public Optional<Genre> findById(Long id) {
         return findOne(FIND_BY_ID_QUERY, id);
     }
 

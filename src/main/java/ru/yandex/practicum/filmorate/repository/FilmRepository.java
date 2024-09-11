@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FilmRepository extends Repository {
-    Optional<Film> get(Long id);
+    Optional<Film> findById(Long id);
 
     List<Film> getAll();
 

@@ -21,9 +21,9 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
     private static final String DELETE_QUERY = "DELETE FROM films WHERE id = ?";
     private static final String FIND_TOP_FILMS =
             """
-                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" f
-                    LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
-                    GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
+                    SELECT f."id", f."name", f."description", f."release_date", f."duration", f."rating_id" FROM "films" AS f
+                    LEFT JOIN "user_films_liked" AS ufl ON f."id" = ufl."film_id"
+                    GROUP BY f."id", f."name", f."description", f."release_date", f."duration", f."rating_id"
                     ORDER BY COUNT(*) DESC
                     LIMIT ?
                     """;
@@ -132,7 +132,7 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
     }
 
     @Override
-    public Optional<Film> get(Long id) {
+    public Optional<Film> findById(Long id) {
         return findOne(FIND_BY_ID_QUERY, id);
     }
 

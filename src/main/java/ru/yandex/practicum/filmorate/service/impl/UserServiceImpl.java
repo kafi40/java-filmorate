@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     ActivityRepository activityRepository;
 
     public UserDto get(Long id) {
-        return userRepository.get(id)
+        return userRepository.findById(id)
                 .map(UserMapper::mapToUserDto)
                 .orElseThrow(() -> new NotFoundException("Пользователь с ID = " + id + " не найден"));
     }
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
         if (request.getId() == null) {
             throw new ValidationException("ID", "Должен быть указан ID");
         }
-        User updatedUser = userRepository.get(request.getId())
+        User updatedUser = userRepository.findById(request.getId())
                 .map(user -> UserMapper.updateUserFields(user, request))
                 .orElseThrow(() -> new NotFoundException("Пользователь с ID " + request.getId() + " не найден"));
         updatedUser = userRepository.update(updatedUser);

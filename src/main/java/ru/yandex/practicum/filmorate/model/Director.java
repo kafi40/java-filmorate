@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -8,7 +7,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 public class Director implements Comparable<Director> {
     private Long id;
-    @NotBlank(message = "Пустое имя")
     private String name;
 
     @Override
