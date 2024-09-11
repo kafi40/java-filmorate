@@ -73,6 +73,7 @@ public class UserController {
     public List<FilmDto> getRecommendations(@PathVariable(value = "id") Long userId) {
         return userService.getRecommendations(userId);
     }
+
     @GetMapping("{id}/feed")
     public List<ActivityDto> getUserFeed(@PathVariable Long id) {
         return userService.getUserFeed(id);
