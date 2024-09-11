@@ -25,6 +25,12 @@ public class ReviewController {
         return reviewService.get(id);
     }
 
+//    @GetMapping
+//    @ResponseStatus(HttpStatus.OK)
+//    public List<ReviewDto> getReviews() {
+//        return reviewService.getAll();
+//    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReviewDto createReview(@Valid @RequestBody ReviewRequest request) {
