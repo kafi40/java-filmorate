@@ -47,18 +47,12 @@ public class ReviewServiceImpl implements ReviewService {
             throw new NotFoundException("ID должен быть больше 0");
         }
 
-        Activity activity = new Activity();
-        activity.setEventType(EventType.REVIEW);
-        activity.setTimestamp(Instant.now());
-        activity.setUserId(request.getUserId());
-
-        activity.setOperation(Operation.ADD);
-
-
         Review review = ReviewMapper.mapToReview(request);
         setUserAndFilm(review, request);
         review = reviewRepository.save(review);
-        activity.setEntityId(review.getId());
+
+
+        Activity activity = new Activity(request.getUserId(), EventType.REVIEW, Operation.ADD, review.getId());
         activityRepository.save(activity);
 
         return ReviewMapper.mapToReviewDto(review);
@@ -92,12 +86,8 @@ public class ReviewServiceImpl implements ReviewService {
         Optional<Review> optionalReview = reviewRepository.findOne(id);
 
         if (optionalReview.isPresent()) {
-            Activity activity = new Activity();
-            activity.setEventType(EventType.REVIEW);
-            activity.setTimestamp(Instant.now());
-            activity.setUserId(optionalReview.get().getUser().getId());
-            activity.setEntityId(id);
-            activity.setOperation(Operation.REMOVE);
+            Activity activity = new Activity(optionalReview.get().getUser().getId(),
+                    EventType.REVIEW, Operation.REMOVE, id);
             activityRepository.save(activity);
         }
 

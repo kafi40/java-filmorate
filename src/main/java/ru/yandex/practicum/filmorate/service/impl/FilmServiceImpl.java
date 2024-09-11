@@ -19,7 +19,6 @@ import ru.yandex.practicum.filmorate.repository.*;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.util.Util;
 
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -76,15 +75,9 @@ public class FilmServiceImpl implements FilmService {
 
     public boolean putLike(Long id, Long userId) {
         Util.checkId(filmRepository, id);
-        Util.checkId(userRepository, id);
+        Util.checkId(userRepository, userId);
 
-        Activity activity = new Activity();
-        activity.setEventType(EventType.LIKE);
-        activity.setTimestamp(Instant.now());
-        activity.setUserId(userId);
-        activity.setEntityId(id);
-        activity.setOperation(Operation.ADD);
-
+        Activity activity = new Activity(userId, EventType.LIKE, Operation.ADD, id);
         activityRepository.save(activity);
 
         return filmRepository.putLike(id, userId);
@@ -92,15 +85,9 @@ public class FilmServiceImpl implements FilmService {
 
     public boolean deleteLike(Long id, Long userId) {
         Util.checkId(filmRepository, id);
-        Util.checkId(userRepository, id);
+        Util.checkId(userRepository, userId);
 
-        Activity activity = new Activity();
-        activity.setEventType(EventType.LIKE);
-        activity.setTimestamp(Instant.now());
-        activity.setUserId(userId);
-        activity.setEntityId(id);
-        activity.setOperation(Operation.REMOVE);
-
+        Activity activity = new Activity(userId, EventType.LIKE, Operation.REMOVE, id);
         activityRepository.save(activity);
 
         return filmRepository.deleteLike(id, userId);

@@ -25,7 +25,6 @@ import ru.yandex.practicum.filmorate.repository.UserRepository;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.util.Util;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -94,13 +93,10 @@ public class UserServiceImpl implements UserService {
         if (id.equals(otherId)) {
             throw new RuntimeException("Нельзя добавить самого себя в друзья");
         }
-        Activity activity = new Activity();
-        activity.setEventType(EventType.FRIEND);
+
         Util.checkId(userRepository, id, otherId);
-        activity.setTimestamp(Instant.now());
-        activity.setUserId(id);
-        activity.setEntityId(otherId);
-        activity.setOperation(Operation.ADD);
+        Activity activity = new Activity(id, EventType.FRIEND, Operation.ADD, otherId);
+
         activityRepository.save(activity);
 
         if (userRepository.isFriendRequest(id, otherId)) {
@@ -115,12 +111,7 @@ public class UserServiceImpl implements UserService {
         }
         Util.checkId(userRepository, id, otherId);
 
-        Activity activity = new Activity();
-        activity.setEventType(EventType.FRIEND);
-        activity.setTimestamp(Instant.now());
-        activity.setUserId(id);
-        activity.setEntityId(otherId);
-        activity.setOperation(Operation.REMOVE);
+        Activity activity = new Activity(id, EventType.FRIEND, Operation.REMOVE, otherId);
         activityRepository.save(activity);
 
         if (userRepository.isFriend(id, otherId)) {
