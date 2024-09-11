@@ -4,15 +4,21 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.controller.mapper.ActivityMapper;
 import ru.yandex.practicum.filmorate.controller.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.controller.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.controller.model.activity.ActivityDto;
 import ru.yandex.practicum.filmorate.controller.model.film.FilmDto;
 import ru.yandex.practicum.filmorate.controller.model.user.UserRequest;
 import ru.yandex.practicum.filmorate.controller.model.user.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.controller.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.Activity;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enums.EventType;
+import ru.yandex.practicum.filmorate.model.enums.Operation;
+import ru.yandex.practicum.filmorate.repository.ActivityRepository;
 import ru.yandex.practicum.filmorate.repository.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.GenreRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
@@ -31,6 +37,7 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     FilmRepository filmRepository;
     GenreRepository genreRepository;
+    ActivityRepository activityRepository;
 
     public UserDto get(Long id) {
         return userRepository.get(id)
@@ -55,7 +62,7 @@ public class UserServiceImpl implements UserService {
 
     public UserDto update(UserRequest request) {
         if (request.getId() == null) {
-            throw new ValidationException("ID","Должен быть указан ID");
+            throw new ValidationException("ID", "Должен быть указан ID");
         }
         User updatedUser = userRepository.get(request.getId())
                 .map(user -> UserMapper.updateUserFields(user, request))
@@ -86,11 +93,16 @@ public class UserServiceImpl implements UserService {
         if (id.equals(otherId)) {
             throw new RuntimeException("Нельзя добавить самого себя в друзья");
         }
+
         Util.checkId(userRepository, id, otherId);
+        Activity activity = new Activity(id, EventType.FRIEND, Operation.ADD, otherId);
+
+        activityRepository.save(activity);
+
         if (userRepository.isFriendRequest(id, otherId)) {
             return userRepository.acceptRequest(id, otherId);
         }
-       return userRepository.addFriend(id, otherId);
+        return userRepository.addFriend(id, otherId);
     }
 
     public boolean deleteFriend(Long id, Long otherId) {
@@ -98,6 +110,10 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Нельзя удалить самого себя из друзей");
         }
         Util.checkId(userRepository, id, otherId);
+
+        Activity activity = new Activity(id, EventType.FRIEND, Operation.REMOVE, otherId);
+        activityRepository.save(activity);
+
         if (userRepository.isFriend(id, otherId)) {
             return userRepository.removeRequest(id, otherId);
         }
@@ -127,5 +143,16 @@ public class UserServiceImpl implements UserService {
                     );
         }
         return recommendationsFilms;
+    }
+
+    @Override
+    public List<ActivityDto> getUserFeed(Long id) {
+
+        Util.checkId(userRepository, id);
+
+        return activityRepository.getUserFeed(id)
+                .stream()
+                .map(ActivityMapper::mapToActivityDto)
+                .collect(Collectors.toList());
     }
 }
