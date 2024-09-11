@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import ru.yandex.practicum.filmorate.controller.model.activity.ActivityDto;
 import ru.yandex.practicum.filmorate.controller.model.film.FilmDto;
 import ru.yandex.practicum.filmorate.controller.model.user.UserDto;
 import ru.yandex.practicum.filmorate.controller.model.user.UserRequest;
@@ -17,4 +18,6 @@ public interface UserService extends BaseService<UserDto, UserRequest> {
     boolean deleteFriend(Long id, Long otherId);
 
     List<FilmDto> getRecommendations(Long userId);
+
+    List<ActivityDto> getUserFeed(Long id);
 }
