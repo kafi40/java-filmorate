@@ -19,7 +19,6 @@ public class ReviewRepositoryImpl extends BaseRepository<Review> implements Revi
                             WHERE review_id = id) as useful
                     FROM reviews WHERE id = ?
                     """;
-    private static final String FIND_ALL_QUERY = "SELECT * FROM reviews";
     private static final String INSERT_QUERY = "INSERT INTO reviews(content, is_positive, user_id, film_id)" +
             "VALUES (?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE reviews SET content = ?, is_positive = ?, user_id = ?, film_id = ? " +
@@ -72,11 +71,6 @@ public class ReviewRepositoryImpl extends BaseRepository<Review> implements Revi
     @Override
     public Optional<Review> findOne(Long id) {
         return findOne(FIND_BY_ID_QUERY, id);
-    }
-
-    @Override
-    public List<Review> findMany() {
-        return findMany(FIND_ALL_QUERY);
     }
 
     @Override

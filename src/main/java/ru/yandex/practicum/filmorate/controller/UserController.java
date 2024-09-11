@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public Set<UserDto> getFriends(@PathVariable Long id) {
+    public List<UserDto> getFriends(@PathVariable Long id) {
         return userService.getFriends(id);
     }
 

@@ -58,6 +58,10 @@ CREATE TABLE IF NOT EXISTS "user_films_liked"
     ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+ALTER TABLE "user_films_liked"
+    ADD CONSTRAINT "uq_user_films"
+        UNIQUE ("user_id", "film_id");
+
 CREATE TABLE IF NOT EXISTS "user_friends"
 (
     user_id INTEGER NOT NULL REFERENCES "users" (id)

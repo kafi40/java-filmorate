@@ -26,6 +26,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.util.Util;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -75,11 +76,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.delete(id);
     }
 
-    public Set<UserDto> getFriends(Long id) {
+    public List<UserDto> getFriends(Long id) {
         Util.checkId(userRepository, id);
         return userRepository.getFriends(id).stream()
                 .map(UserMapper::mapToUserDto)
-                .collect(Collectors.toSet());
+                .sorted(Comparator.comparingLong(UserDto::getId))
+                .collect(Collectors.toList());
     }
 
     public Set<UserDto> getCommonFriends(Long id, Long otherId) {

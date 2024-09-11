@@ -6,7 +6,9 @@ import ru.yandex.practicum.filmorate.controller.model.review.ReviewRequest;
 import java.util.List;
 
 public interface ReviewService extends BaseService<ReviewDto, ReviewRequest> {
-    List<ReviewDto> getAll();
+    default List<ReviewDto> getAll() {
+        return null;
+    }
 
     List<ReviewDto> getFilmReviews(Long filmId, int count);
 

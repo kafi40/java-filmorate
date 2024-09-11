@@ -24,13 +24,15 @@ public interface FilmRepository extends Repository {
 
     void addGenreForFilm(Long id, Long genreId);
 
-    void deleteGenreForFilm(Long id, Long genreId);
+    void deleteAllGenresForFilm(Long id);
 
     void addDirectorForFilm(Long id, Long directorId);
 
     List<Film> getDirectorsFilmSortByYear(Long id);
 
     List<Film> getDirectorsFilmSortByLikes(Long id);
+
+    void deleteAllDirectorsForFilm(Long id);
 
     List<Film> findCommonFilms(Long userId, Long friendId);
 
