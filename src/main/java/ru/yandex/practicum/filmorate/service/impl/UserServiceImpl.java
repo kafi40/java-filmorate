@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService {
 
         return activityRepository.getUserFeed(id)
                 .stream()
-                .map(ActivityMapper::MapToActivityDto)
+                .map(ActivityMapper::mapToActivityDto)
                 .collect(Collectors.toList());
     }
 }
