@@ -145,13 +145,26 @@ public class FilmServiceImpl implements FilmService {
         film.setMpa(mpa);
     }
 
+    private void updateGenres(Film film, FilmRequest request) {
+        Set<Genre> genres = request.getGenres().stream()
+                .map(GenreRequest::getId)
+                .map(genreRepository::get)
+                .map(genre -> genre
+                        .orElseThrow(() -> new ElementNotExistsException("Жанр не найден")))
+                .peek(genre -> filmRepository.updateGenreForFilm(film.getId(), genre.getId()))
+                .collect(Collectors.toSet());
+        film.setGenres(genres);
+    }
+
     private void addGenres(Film film, FilmRequest request) {
         filmRepository.deleteAllGenresForFilm(film.getId());
         if (request.getGenres() == null) {
             film.setGenres(new HashSet<>());
             return;
         }
-
+        for (GenreRequest genre : request.getGenres()) {
+            filmRepository.updateGenreForFilm(film.getId(), genre.getId());
+        }
         Set<Genre> genres = request.getGenres().stream()
                 .map(GenreRequest::getId)
                 .map(genreRepository::findById)
