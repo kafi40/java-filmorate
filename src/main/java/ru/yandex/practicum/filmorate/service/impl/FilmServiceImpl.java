@@ -12,14 +12,14 @@ import ru.yandex.practicum.filmorate.exception.ElementNotExistsException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.controller.mapper.FilmMapper;
-import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.model.enums.EventType;
+import ru.yandex.practicum.filmorate.model.enums.Operation;
 import ru.yandex.practicum.filmorate.repository.*;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.util.Util;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +32,7 @@ public class FilmServiceImpl implements FilmService {
     GenreRepository genreRepository;
     UserRepository userRepository;
     DirectorRepository directorRepository;
+    ActivityRepository activityRepository;
 
     public FilmDto get(Long id) {
         return filmRepository.get(id)
@@ -56,7 +57,7 @@ public class FilmServiceImpl implements FilmService {
 
     public FilmDto update(FilmRequest request) {
         if (request.getId() == null) {
-            throw new ValidationException("ID","Должен быть указан ID");
+            throw new ValidationException("ID", "Должен быть указан ID");
         }
 
         Film updatedFilm = filmRepository.get(request.getId())
@@ -76,12 +77,32 @@ public class FilmServiceImpl implements FilmService {
     public boolean putLike(Long id, Long userId) {
         Util.checkId(filmRepository, id);
         Util.checkId(userRepository, id);
+
+        Activity activity = new Activity();
+        activity.setEventType(EventType.LIKE);
+        activity.setTimestamp(Instant.now());
+        activity.setUserId(userId);
+        activity.setEntityId(id);
+        activity.setOperation(Operation.ADD);
+
+        activityRepository.save(activity);
+
         return filmRepository.putLike(id, userId);
     }
 
     public boolean deleteLike(Long id, Long userId) {
         Util.checkId(filmRepository, id);
         Util.checkId(userRepository, id);
+
+        Activity activity = new Activity();
+        activity.setEventType(EventType.LIKE);
+        activity.setTimestamp(Instant.now());
+        activity.setUserId(userId);
+        activity.setEntityId(id);
+        activity.setOperation(Operation.REMOVE);
+
+        activityRepository.save(activity);
+
         return filmRepository.deleteLike(id, userId);
     }
 
@@ -126,7 +147,6 @@ public class FilmServiceImpl implements FilmService {
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
-
 
 
     private void addRating(Film film, FilmRequest request) {

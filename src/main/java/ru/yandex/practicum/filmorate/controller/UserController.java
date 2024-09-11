@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.controller.model.activity.ActivityDto;
 import ru.yandex.practicum.filmorate.controller.model.film.FilmDto;
 import ru.yandex.practicum.filmorate.controller.model.user.UserRequest;
 import ru.yandex.practicum.filmorate.controller.model.user.UserDto;
@@ -71,5 +72,9 @@ public class UserController {
     @GetMapping("/{id}/recommendations")
     public List<FilmDto> getRecommendations(@PathVariable(value = "id") Long userId) {
         return userService.getRecommendations(userId);
+    }
+    @GetMapping("{id}/feed")
+    public List<ActivityDto> getUserFeed(@PathVariable Long id) {
+        return userService.getUserFeed(id);
     }
 }

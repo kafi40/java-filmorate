@@ -9,15 +9,22 @@ import ru.yandex.practicum.filmorate.controller.model.review.ReviewRequest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.controller.mapper.ReviewMapper;
+import ru.yandex.practicum.filmorate.model.Activity;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enums.EventType;
+import ru.yandex.practicum.filmorate.model.enums.Operation;
+import ru.yandex.practicum.filmorate.repository.ActivityRepository;
 import ru.yandex.practicum.filmorate.repository.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.ReviewRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
+
+import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +34,7 @@ public class ReviewServiceImpl implements ReviewService {
     ReviewRepository reviewRepository;
     UserRepository userRepository;
     FilmRepository filmRepository;
+    ActivityRepository activityRepository;
 
     public ReviewDto get(Long id) {
         return reviewRepository.findOne(id)
@@ -38,25 +46,61 @@ public class ReviewServiceImpl implements ReviewService {
         if (request.getUserId() < 1 || request.getFilmId() < 1) {
             throw new NotFoundException("ID должен быть больше 0");
         }
+
+        Activity activity = new Activity();
+        activity.setEventType(EventType.REVIEW);
+        activity.setTimestamp(Instant.now());
+        activity.setUserId(request.getUserId());
+
+        activity.setOperation(Operation.ADD);
+
+
         Review review = ReviewMapper.mapToReview(request);
         setUserAndFilm(review, request);
         review = reviewRepository.save(review);
+        activity.setEntityId(review.getId());
+        activityRepository.save(activity);
+
         return ReviewMapper.mapToReviewDto(review);
     }
 
     public ReviewDto update(ReviewRequest request) {
         if (request.getReviewId() == null) {
-            throw new ValidationException("ID","Должен быть указан ID");
+            throw new ValidationException("ID", "Должен быть указан ID");
         }
         Review updateReview = reviewRepository.findOne(request.getReviewId())
                 .map(review -> ReviewMapper.updateReviewFields(review, request))
                 .orElseThrow(() -> new NotFoundException("Отзыва с ID " + request.getReviewId() + " не найден"));
         setUserAndFilm(updateReview, request);
         updateReview = reviewRepository.update(updateReview);
+
+        Activity activity = new Activity();
+        activity.setEventType(EventType.REVIEW);
+        activity.setTimestamp(Instant.now());
+        activity.setUserId(request.getUserId());
+        activity.setEntityId(request.getReviewId());
+        activity.setOperation(Operation.UPDATE);
+
+        activityRepository.save(activity);
+
+
         return ReviewMapper.mapToReviewDto(updateReview);
     }
 
     public boolean delete(Long id) {
+
+        Optional<Review> optionalReview = reviewRepository.findOne(id);
+
+        if (optionalReview.isPresent()) {
+            Activity activity = new Activity();
+            activity.setEventType(EventType.REVIEW);
+            activity.setTimestamp(Instant.now());
+            activity.setUserId(optionalReview.get().getUser().getId());
+            activity.setEntityId(id);
+            activity.setOperation(Operation.REMOVE);
+            activityRepository.save(activity);
+        }
+
         return reviewRepository.delete(id);
     }
 
