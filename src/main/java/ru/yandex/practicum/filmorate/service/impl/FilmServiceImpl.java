@@ -76,11 +76,15 @@ public class FilmServiceImpl implements FilmService {
     public boolean putLike(Long id, Long userId) {
         Util.checkId(filmRepository, id);
         Util.checkId(userRepository, userId);
+
+        Activity activity = new Activity(userId, EventType.LIKE, Operation.ADD, id);
+        activityRepository.save(activity);
+
         if (filmRepository.findLike(id, userId)) {
             return false;
         }
-        Activity activity = new Activity(userId, EventType.LIKE, Operation.ADD, id);
-        activityRepository.save(activity);
+
+
 
         return filmRepository.putLike(id, userId);
     }
