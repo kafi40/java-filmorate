@@ -116,7 +116,6 @@ public class UserServiceImpl implements UserService {
         Util.checkId(userRepository, id, otherId);
 
 
-
         if (userRepository.isFriend(id, otherId)) {
             return userRepository.removeRequest(id, otherId);
         }
