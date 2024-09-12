@@ -58,7 +58,6 @@ public class ReviewServiceImpl implements ReviewService {
         setUserAndFilm(review, request);
         review = reviewRepository.save(review);
 
-
         Activity activity = new Activity(request.getUserId(), EventType.REVIEW, Operation.ADD, review.getId());
         activityRepository.save(activity);
 
@@ -72,7 +71,6 @@ public class ReviewServiceImpl implements ReviewService {
         Review updateReview = reviewRepository.findOne(request.getReviewId())
                 .map(review -> ReviewMapper.updateReviewFields(review, request))
                 .orElseThrow(() -> new NotFoundException("Отзыва с ID " + request.getReviewId() + " не найден"));
-        setUserAndFilm(updateReview, request);
         updateReview = reviewRepository.update(updateReview);
 
         Activity activity = new Activity();
