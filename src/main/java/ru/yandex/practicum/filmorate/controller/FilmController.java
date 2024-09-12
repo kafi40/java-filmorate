@@ -6,14 +6,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.controller.model.director.DirectorDto;
 import ru.yandex.practicum.filmorate.controller.model.film.FilmDto;
 import ru.yandex.practicum.filmorate.controller.model.film.FilmRequest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,16 +39,21 @@ public class FilmController {
 
     @GetMapping("/search")
     public List<FilmDto> searchFilms(@RequestParam("query") String query, @RequestParam("by") String by) {
-        if (by.equals(TITLE)) {
-            return filmService.getSearchFilm(query);
-        } else if (by.equals(DIRECTOR)) {
-            return filmService.getSearchDirector(query);
-        } else if (by.equals(TITLE + ',' + DIRECTOR) || by.equals(DIRECTOR + ',' + TITLE)) {
-            List<FilmDto> searchDirector = filmService.getSearchDirector(query);
-            searchDirector.addAll(filmService.getSearchFilm(query));
-            return searchDirector.stream().distinct().collect(Collectors.toList());
-        } else {
-            return null;
+        switch (by) {
+            case TITLE -> {
+                return filmService.getSearchFilm(query);
+            }
+            case DIRECTOR -> {
+                return filmService.getSearchDirector(query);
+            }
+            case TITLE + ',' + DIRECTOR, DIRECTOR + ',' + TITLE -> {
+                List<FilmDto> searchDirector = filmService.getSearchDirector(query);
+                searchDirector.addAll(filmService.getSearchFilm(query));
+                return searchDirector.stream().distinct().collect(Collectors.toList());
+            }
+            default -> {
+                return null;
+            }
         }
     }
 
