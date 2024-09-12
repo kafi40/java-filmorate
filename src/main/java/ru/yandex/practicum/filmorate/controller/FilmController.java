@@ -6,12 +6,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.controller.model.director.DirectorDto;
 import ru.yandex.practicum.filmorate.controller.model.film.FilmDto;
 import ru.yandex.practicum.filmorate.controller.model.film.FilmRequest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,9 +46,9 @@ public class FilmController {
         } else if (by.equals(DIRECTOR)) {
             return filmService.getSearchDirector(query);
         } else if (by.equals(TITLE + ',' + DIRECTOR) || by.equals(DIRECTOR + ',' + TITLE)) {
-            List<FilmDto> searchFilm = filmService.getSearchFilm(query);
-            searchFilm.addAll(filmService.getSearchDirector(query));
-            return searchFilm.stream().distinct().collect(Collectors.toList());
+            List<FilmDto> searchDirector = filmService.getSearchDirector(query);
+            searchDirector.addAll(filmService.getSearchFilm(query));
+            return searchDirector.stream().distinct().collect(Collectors.toList());
         } else {
             return null;
         }
