@@ -75,8 +75,8 @@ public class ReviewServiceImpl implements ReviewService {
         updateReview = reviewRepository.update(updateReview);
 
 
-        /*Activity activity = new Activity(request.getUserId(), EventType.REVIEW, Operation.UPDATE, request.getReviewId());
-        activityRepository.save(activity);*/
+        Activity activity = new Activity(updateReview.getUser().getId(), EventType.REVIEW, Operation.UPDATE, updateReview.getId());
+        activityRepository.save(activity);
 
         return ReviewMapper.mapToReviewDto(updateReview);
     }
@@ -102,9 +102,6 @@ public class ReviewServiceImpl implements ReviewService {
 
     public ReviewDto updateScore(Long id, Long userId, int score) {
         reviewRepository.updateScore(id, userId, score);
-
-        Activity activity = new Activity(userId, EventType.REVIEW, Operation.UPDATE, id);
-        activityRepository.save(activity);
 
         return reviewRepository.findOne(id)
                 .map(ReviewMapper::mapToReviewDto)
