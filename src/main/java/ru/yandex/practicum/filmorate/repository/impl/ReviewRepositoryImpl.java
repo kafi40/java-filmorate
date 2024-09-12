@@ -28,18 +28,20 @@ public class ReviewRepositoryImpl extends BaseRepository<Review> implements Revi
     private static final String FIND_REVIEWS_WITH_LIMIT =
             """
                     SELECT "id", "content", "is_positive", "user_id", "film_id",
-                        (SELECT SUM("score") FROM "user_reviews_scored"
-                        WHERE "review_id" = "id") as useful
+                        (SELECT COALESCE(SUM("score"), 0) FROM "user_reviews_scored"
+                        WHERE "review_id" = "id") AS useful
                     FROM "reviews"
+                    ORDER BY useful DESC
                     LIMIT ?
                     """;
     private static final String FIND_REVIEWS_FOR_FILM =
             """
                     SELECT "id", "content", "is_positive", "user_id", "film_id",
-                        (SELECT SUM("score") FROM "user_reviews_scored"
-                        WHERE "review_id" = "id") as useful
+                        (SELECT COALESCE(SUM("score"), 0) FROM "user_reviews_scored"
+                        WHERE "review_id" = "id") AS useful
                     FROM "reviews"
                     WHERE "film_id" = ?
+                    ORDER BY useful DESC
                     LIMIT ?
                     """;
     private static final String FIND_SCORE =
