@@ -42,6 +42,13 @@ public class ReviewServiceImpl implements ReviewService {
                 .orElseThrow(() -> new NotFoundException("Отзыв с ID = " + id + " не найден"));
     }
 
+    @Override
+    public List<ReviewDto> getAll() {
+        return reviewRepository.findMany().stream()
+                .map(ReviewMapper::mapToReviewDto)
+                .collect(Collectors.toList());
+    }
+
     public ReviewDto save(ReviewRequest request) {
         if (request.getUserId() < 1 || request.getFilmId() < 1) {
             throw new NotFoundException("ID должен быть больше 0");
@@ -108,10 +115,10 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private void setUserAndFilm(Review review, ReviewRequest request) {
-        User user = userRepository.get(request.getUserId())
+        User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new NotFoundException("Пользователь с ID = " + request.getUserId() + " не найден"));
         review.setUser(user);
-        Film film = filmRepository.get(request.getFilmId())
+        Film film = filmRepository.findById(request.getFilmId())
                 .orElseThrow(() -> new NotFoundException("Фильм с ID = " + request.getFilmId() + " не найден"));
         review.setFilm(film);
     }

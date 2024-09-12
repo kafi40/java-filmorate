@@ -21,59 +21,63 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
     private static final String DELETE_QUERY = "DELETE FROM films WHERE id = ?";
     private static final String FIND_TOP_FILMS =
             """
-                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" f
-                    LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
-                    GROUP BY "id", "name", "description", "release_date", "duration", "rating_id"
-                    ORDER BY COUNT(*) DESC
+                    SELECT f."id", f."name", f."description", f."release_date", f."duration", f."rating_id" FROM "films" AS f
+                    LEFT JOIN "user_films_liked" AS ufl ON f."id" = ufl."film_id"
+                    GROUP BY f."id"
+                    ORDER BY COUNT(ufl."film_id") DESC
                     LIMIT ?
                     """;
     private static final String FIND_TOP_FILMS_BY_YEAR_AND_GENRE =
             """
-                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" AS f
+                    SELECT f."id", f."name", f."description", f."release_date", f."duration", f."rating_id" FROM "films" AS f
                     LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
                     WHERE EXTRACT(YEAR FROM f."release_date") = ? AND f."id" IN
                     (SELECT "film_id"
-                     FROM "film_genres" AS fg 
+                     FROM "film_genres" AS fg
                      WHERE fg."genre_id" = ?
                      )
                     GROUP BY f."id"
-                    ORDER BY COUNT(*) DESC
+                    ORDER BY COUNT(ufl."film_id") DESC
                     LIMIT ?;
                     """;
     private static final String FIND_TOP_FILMS_BY_YEAR =
             """
-                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" AS f
+                    SELECT f."id", f."name", f."description", f."release_date", f."duration", f."rating_id" FROM "films" AS f
                     LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
                     WHERE EXTRACT(YEAR FROM f."release_date") = ?
                     GROUP BY f."id"
-                    ORDER BY COUNT(*) DESC
+                    ORDER BY COUNT(ufl."film_id") DESC
                     LIMIT ?;
                     """;
     private static final String FIND_TOP_FILMS_BY_GENRE =
             """
-                    SELECT "id", "name", "description", "release_date", "duration", "rating_id" FROM "films" AS f
+                    SELECT f."id", f."name", f."description", f."release_date", f."duration", f."rating_id" FROM "films" AS f
                     LEFT JOIN "user_films_liked" ufl ON f."id" = ufl."film_id"
                     WHERE f."id" IN
                     (SELECT "film_id" FROM "film_genres" AS fg WHERE fg."genre_id" = ? GROUP BY "film_id")
                     GROUP BY f."id"
-                    ORDER BY COUNT(*) DESC
+                    ORDER BY COUNT(ufl."film_id") DESC
                     LIMIT ?;
+                    """;
+    private static final String FIND_LIKE =
+            """
+                    SELECT * FROM "user_films_liked" WHERE "film_id" = ? AND "user_id" = ?;
                     """;
     private static final String ADD_LIKE =
             """
-                    INSERT INTO "user_films_liked"("user_id", "film_id") VALUES (?, ?)
+                    INSERT INTO "user_films_liked"("film_id", "user_id") VALUES (?, ?)
                     """;
     private static final String DELETE_LIKE =
             """
-                    DELETE FROM "user_films_liked" WHERE "user_id" = ? AND "film_id" = ?
+                    DELETE FROM "user_films_liked" WHERE "film_id" = ? AND "user_id" = ?
                     """;
     private static final String ADD_GENRE_FOR_FILM =
             """
                     INSERT INTO "film_genres"("film_id", "genre_id") VALUES (?, ?)
                     """;
-    private static final String DELETE_GENRE_FOR_FILM =
+    private static final String DELETE_ALL_GENRE_FOR_FILM =
             """
-                    DELETE "film_genres" WHERE "film_id" = ? 
+                    DELETE FROM "film_genres" WHERE "film_id" = ?
                     """;
     private static final String FIND_COMMON_FILMS =
             """
@@ -111,9 +115,14 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
                     INSERT INTO "film_directors"("film_id", "director_id") VALUES (?, ?)
                     """;
 
+    private static final String DELETE_ALL_DIRECTOR_FOR_FILM =
+            """
+                    DELETE FROM "film_directors" WHERE "film_id" = ?
+                    """;
+
     private static final String SEARCH_FILM =
             """
-                    SELECT * FROM "films" WHERE "name" LIKE CONCAT('%',?,'%');
+                    SELECT * FROM "films" WHERE LOWER("name") LIKE CONCAT('%',?,'%');
                     """;
 
     private static final String SEARCH_FILM_DIRECTOR =
@@ -122,7 +131,7 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
                     FROM "films" AS f
                     JOIN "film_directors" AS fd ON f."id" = fd."film_id"
                     JOIN "directors" AS d ON fd."director_id" = d."id"
-                    WHERE d."name" LIKE CONCAT('%',?,'%')
+                    WHERE LOWER(d."name") LIKE CONCAT('%',?,'%')
                     """;
 
     private static final String GET_RECOMMENDATIONS =
@@ -139,7 +148,7 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
     }
 
     @Override
-    public Optional<Film> get(Long id) {
+    public Optional<Film> findById(Long id) {
         return findOne(FIND_BY_ID_QUERY, id);
     }
 
@@ -182,13 +191,18 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
     }
 
     @Override
+    public boolean findLike(Long id, Long userId) {
+        return jdbc.queryForRowSet(FIND_LIKE, id, userId).next();
+    }
+
+    @Override
     public boolean putLike(Long id, Long userId) {
-        return jdbc.update(ADD_LIKE, userId, id) > 0;
+        return jdbc.update(ADD_LIKE, id, userId) > 0;
     }
 
     @Override
     public boolean deleteLike(Long id, Long userId) {
-        return jdbc.update(DELETE_LIKE, userId, id) > 0;
+        return jdbc.update(DELETE_LIKE, id, userId) > 0;
     }
 
     @Override
@@ -220,8 +234,8 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
     }
 
     @Override
-    public void deleteGenreForFilm(Long id, Long genreId) {
-        jdbc.update(DELETE_GENRE_FOR_FILM, id);
+    public void deleteAllGenresForFilm(Long id) {
+        jdbc.update(DELETE_ALL_GENRE_FOR_FILM, id);
     }
 
     @Override
@@ -237,6 +251,11 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
     @Override
     public void addDirectorForFilm(Long id, Long directorId) {
         jdbc.update(ADD_DIRECTOR_FOR_FILM, id, directorId);
+    }
+
+    @Override
+    public void deleteAllDirectorsForFilm(Long id) {
+        jdbc.update(DELETE_ALL_DIRECTOR_FOR_FILM, id);
     }
 
     @Override

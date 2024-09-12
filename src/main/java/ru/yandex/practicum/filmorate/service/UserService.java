@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface UserService extends BaseService<UserDto, UserRequest> {
-    Set<UserDto> getFriends(Long id);
+    List<UserDto> getFriends(Long id);
 
     Set<UserDto> getCommonFriends(Long id, Long otherId);
 

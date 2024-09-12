@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FilmRepository extends Repository {
-    Optional<Film> get(Long id);
+    Optional<Film> findById(Long id);
 
     List<Film> getAll();
 
@@ -16,6 +16,8 @@ public interface FilmRepository extends Repository {
 
     boolean delete(Long id);
 
+    boolean findLike(Long id, Long userId);
+
     boolean putLike(Long id, Long userId);
 
     boolean deleteLike(Long id, Long userId);
@@ -24,13 +26,15 @@ public interface FilmRepository extends Repository {
 
     void addGenreForFilm(Long id, Long genreId);
 
-    void deleteGenreForFilm(Long id, Long genreId);
+    void deleteAllGenresForFilm(Long id);
 
     void addDirectorForFilm(Long id, Long directorId);
 
     List<Film> getDirectorsFilmSortByYear(Long id);
 
     List<Film> getDirectorsFilmSortByLikes(Long id);
+
+    void deleteAllDirectorsForFilm(Long id);
 
     List<Film> findCommonFilms(Long userId, Long friendId);
 

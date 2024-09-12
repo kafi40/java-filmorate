@@ -30,10 +30,10 @@ public class ReviewRowMapper implements RowMapper<Review> {
         review.setIsPositive(rs.getBoolean("is_positive"));
         review.setUseful(rs.getInt("useful"));
 
-        User user = userRepository.get(rs.getLong("user_id"))
+        User user = userRepository.findById(rs.getLong("user_id"))
                 .orElseThrow(() -> new NoSuchElementException("Пользователь не найден"));
         review.setUser(user);
-        Film film = filmRepository.get(rs.getLong("film_id"))
+        Film film = filmRepository.findById(rs.getLong("film_id"))
                 .orElseThrow(() -> new NoSuchElementException("Фильм не найден"));
         review.setFilm(film);
         return review;

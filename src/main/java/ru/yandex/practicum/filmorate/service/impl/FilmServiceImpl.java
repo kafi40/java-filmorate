@@ -34,7 +34,7 @@ public class FilmServiceImpl implements FilmService {
     ActivityRepository activityRepository;
 
     public FilmDto get(Long id) {
-        return filmRepository.get(id)
+        return filmRepository.findById(id)
                 .map(FilmMapper::mapToFilmDto)
                 .orElseThrow(() -> new NotFoundException("Фильм с ID = " + id + " не найден"));
     }
@@ -59,7 +59,7 @@ public class FilmServiceImpl implements FilmService {
             throw new ValidationException("ID", "Должен быть указан ID");
         }
 
-        Film updatedFilm = filmRepository.get(request.getId())
+        Film updatedFilm = filmRepository.findById(request.getId())
                 .map(film -> FilmMapper.updateFilmFields(film, request))
                 .orElseThrow(() -> new NotFoundException("Фильм с ID " + request.getId() + " не найден"));
         addRating(updatedFilm, request);
@@ -76,7 +76,9 @@ public class FilmServiceImpl implements FilmService {
     public boolean putLike(Long id, Long userId) {
         Util.checkId(filmRepository, id);
         Util.checkId(userRepository, userId);
-
+        if (filmRepository.findLike(id, userId)) {
+            return false;
+        }
         Activity activity = new Activity(userId, EventType.LIKE, Operation.ADD, id);
         activityRepository.save(activity);
 
@@ -111,12 +113,14 @@ public class FilmServiceImpl implements FilmService {
     }
 
     public List<FilmDto> getDirectorsFilmsByYear(Long id) {
+        Util.checkId(directorRepository, id);
         return filmRepository.getDirectorsFilmSortByYear(id).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
     public List<FilmDto> getDirectorsFilmsByLikes(Long id) {
+        Util.checkId(directorRepository, id);
         return filmRepository.getDirectorsFilmSortByLikes(id).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
@@ -124,13 +128,13 @@ public class FilmServiceImpl implements FilmService {
 
 
     public List<FilmDto> getSearchFilm(String query) {
-        return filmRepository.getSearchFilm(query).stream()
+        return filmRepository.getSearchFilm(query.toLowerCase()).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
     public List<FilmDto> getSearchDirector(String query) {
-        return filmRepository.getSearchDirector(query).stream()
+        return filmRepository.getSearchDirector(query.toLowerCase()).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
@@ -143,28 +147,16 @@ public class FilmServiceImpl implements FilmService {
         film.setMpa(mpa);
     }
 
-    private void updateGenres(Film film, FilmRequest request) {
-        Set<Genre> genres = request.getGenres().stream()
-                .map(GenreRequest::getId)
-                .map(genreRepository::get)
-                .map(genre -> genre
-                        .orElseThrow(() -> new ElementNotExistsException("Жанр не найден")))
-                .peek(genre -> filmRepository.updateGenreForFilm(film.getId(), genre.getId()))
-                .collect(Collectors.toSet());
-        film.setGenres(genres);
-    }
-
     private void addGenres(Film film, FilmRequest request) {
+        filmRepository.deleteAllGenresForFilm(film.getId());
         if (request.getGenres() == null) {
             film.setGenres(new HashSet<>());
             return;
         }
-        for (GenreRequest genre : request.getGenres()) {
-            filmRepository.updateGenreForFilm(film.getId(), genre.getId());
-        }
+
         Set<Genre> genres = request.getGenres().stream()
                 .map(GenreRequest::getId)
-                .map(genreRepository::get)
+                .map(genreRepository::findById)
                 .map(genre -> genre
                         .orElseThrow(() -> new ElementNotExistsException("Жанр не найден")))
                 .peek(genre -> filmRepository.addGenreForFilm(film.getId(), genre.getId()))
@@ -173,6 +165,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     private void addDirector(Film film, FilmRequest request) {
+        filmRepository.deleteAllDirectorsForFilm(film.getId());
         if (request.getDirectors() == null) {
             film.setDirectors(new HashSet<>());
             return;
