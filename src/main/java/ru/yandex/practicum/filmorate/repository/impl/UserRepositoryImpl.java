@@ -14,7 +14,7 @@ public class UserRepositoryImpl extends BaseRepository<User> implements UserRepo
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE id = ?";
     private static final String FIND_ALL_QUERY = "SELECT * FROM users";
     private static final String INSERT_QUERY = "INSERT INTO users(email, login, name, birthday)" +
-            "VALUES (?, ?, ?, ?)";
+                                               "VALUES (?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM users WHERE id = ?";
     private static final String FIND_FRIENDS_QUERY =
@@ -42,9 +42,9 @@ public class UserRepositoryImpl extends BaseRepository<User> implements UserRepo
 
     private static final String ADD_FRIEND_QUERY =
             """
-            INSERT INTO "user_friends"("user_id", "friend_id", "is_accept")
-            VALUES (?, ?, false)
-            """;
+                    INSERT INTO "user_friends"("user_id", "friend_id", "is_accept")
+                    VALUES (?, ?, false)
+                    """;
     private static final String DELETE_FRIEND_QUERY =
             """
                     DELETE FROM "user_friends" WHERE "user_id" = ? AND "friend_id" = ?
@@ -68,12 +68,12 @@ public class UserRepositoryImpl extends BaseRepository<User> implements UserRepo
 
     private static final String GET_BEST_REPETITION_USER =
             """
-            SELECT ufl2."user_id" FROM "user_films_liked" AS ufl1
-            JOIN "user_films_liked" AS ufl2 ON ufl1."film_id" = ufl2."film_id"
-            WHERE ufl1."user_id" = ? AND ufl1."user_id"<>ufl2."user_id"
-            GROUP BY ufl1."user_id" , ufl2."user_id"
-            ORDER BY COUNT(ufl1."film_id") DESC LIMIT 1
-            """;
+                    SELECT ufl2."user_id" FROM "user_films_liked" AS ufl1
+                    JOIN "user_films_liked" AS ufl2 ON ufl1."film_id" = ufl2."film_id"
+                    WHERE ufl1."user_id" = ? AND ufl1."user_id"<>ufl2."user_id"
+                    GROUP BY ufl1."user_id" , ufl2."user_id"
+                    ORDER BY COUNT(ufl1."film_id") DESC LIMIT 1
+                    """;
 
     public UserRepositoryImpl(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
