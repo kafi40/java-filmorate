@@ -76,7 +76,9 @@ public class FilmServiceImpl implements FilmService {
     public boolean putLike(Long id, Long userId) {
         Util.checkId(filmRepository, id);
         Util.checkId(userRepository, userId);
-
+        if (filmRepository.findLike(id, userId)) {
+            return false;
+        }
         Activity activity = new Activity(userId, EventType.LIKE, Operation.ADD, id);
         activityRepository.save(activity);
 
@@ -151,9 +153,7 @@ public class FilmServiceImpl implements FilmService {
             film.setGenres(new HashSet<>());
             return;
         }
-        for (GenreRequest genre : request.getGenres()) {
-            filmRepository.deleteAllGenresForFilm(film.getId());
-        }
+
         Set<Genre> genres = request.getGenres().stream()
                 .map(GenreRequest::getId)
                 .map(genreRepository::findById)

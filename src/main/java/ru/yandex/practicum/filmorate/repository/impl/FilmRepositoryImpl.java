@@ -59,6 +59,10 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
                     ORDER BY COUNT(ufl."film_id") DESC
                     LIMIT ?;
                     """;
+    private static final String FIND_LIKE =
+            """
+                    SELECT * FROM "user_films_liked" WHERE "film_id" = ? AND "user_id" = ?;
+                    """;
     private static final String ADD_LIKE =
             """
                     INSERT INTO "user_films_liked"("film_id", "user_id") VALUES (?, ?)
@@ -184,6 +188,11 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
     @Override
     public boolean delete(Long id) {
         return delete(DELETE_QUERY, id);
+    }
+
+    @Override
+    public boolean findLike(Long id, Long userId) {
+        return jdbc.queryForRowSet(FIND_LIKE, id, userId).next();
     }
 
     @Override

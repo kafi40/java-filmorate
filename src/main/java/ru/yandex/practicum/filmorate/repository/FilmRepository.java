@@ -16,6 +16,8 @@ public interface FilmRepository extends Repository {
 
     boolean delete(Long id);
 
+    boolean findLike(Long id, Long userId);
+
     boolean putLike(Long id, Long userId);
 
     boolean deleteLike(Long id, Long userId);
