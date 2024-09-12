@@ -97,13 +97,15 @@ public class UserServiceImpl implements UserService {
         }
 
         Util.checkId(userRepository, id, otherId);
-        Activity activity = new Activity(id, EventType.FRIEND, Operation.ADD, otherId);
 
-        activityRepository.save(activity);
 
         if (userRepository.isFriendRequest(id, otherId)) {
             return userRepository.acceptRequest(id, otherId);
         }
+
+        Activity activity = new Activity(id, EventType.FRIEND, Operation.ADD, otherId);
+        activityRepository.save(activity);
+
         return userRepository.addFriend(id, otherId);
     }
 
@@ -113,12 +115,15 @@ public class UserServiceImpl implements UserService {
         }
         Util.checkId(userRepository, id, otherId);
 
-        Activity activity = new Activity(id, EventType.FRIEND, Operation.REMOVE, otherId);
-        activityRepository.save(activity);
+
 
         if (userRepository.isFriend(id, otherId)) {
             return userRepository.removeRequest(id, otherId);
         }
+
+        Activity activity = new Activity(id, EventType.FRIEND, Operation.REMOVE, otherId);
+        activityRepository.save(activity);
+
         return userRepository.deleteFriend(id, otherId);
     }
 

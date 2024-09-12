@@ -22,7 +22,6 @@ import ru.yandex.practicum.filmorate.repository.UserRepository;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -68,20 +67,16 @@ public class ReviewServiceImpl implements ReviewService {
         if (request.getReviewId() == null) {
             throw new ValidationException("ID", "Должен быть указан ID");
         }
+
+
         Review updateReview = reviewRepository.findOne(request.getReviewId())
                 .map(review -> ReviewMapper.updateReviewFields(review, request))
                 .orElseThrow(() -> new NotFoundException("Отзыва с ID " + request.getReviewId() + " не найден"));
         updateReview = reviewRepository.update(updateReview);
 
-        Activity activity = new Activity();
-        activity.setEventType(EventType.REVIEW);
-        activity.setTimestamp(Instant.now());
-        activity.setUserId(request.getUserId());
-        activity.setEntityId(request.getReviewId());
-        activity.setOperation(Operation.UPDATE);
 
-        activityRepository.save(activity);
-
+        /*Activity activity = new Activity(request.getUserId(), EventType.REVIEW, Operation.UPDATE, request.getReviewId());
+        activityRepository.save(activity);*/
 
         return ReviewMapper.mapToReviewDto(updateReview);
     }
@@ -107,6 +102,10 @@ public class ReviewServiceImpl implements ReviewService {
 
     public ReviewDto updateScore(Long id, Long userId, int score) {
         reviewRepository.updateScore(id, userId, score);
+
+        Activity activity = new Activity(userId, EventType.REVIEW, Operation.UPDATE, id);
+        activityRepository.save(activity);
+
         return reviewRepository.findOne(id)
                 .map(ReviewMapper::mapToReviewDto)
                 .orElseThrow(() -> new NotFoundException("Отзыв с ID = " + id + " не найден"));
