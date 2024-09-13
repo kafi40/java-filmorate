@@ -8,7 +8,6 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = MinimalDateValidator.class)
-//@Past
 public @interface MinimalDate {
     String message() default "Дата не может быть раньше {value}";
     Class<?>[] groups() default {};

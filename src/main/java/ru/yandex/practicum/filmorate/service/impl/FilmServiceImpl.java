@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.model.film.FilmDto;
 import ru.yandex.practicum.filmorate.controller.model.film.FilmRequest;
@@ -24,14 +22,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FilmServiceImpl implements FilmService {
-    FilmRepository filmRepository;
-    RatingRepository ratingRepository;
-    GenreRepository genreRepository;
-    UserRepository userRepository;
-    DirectorRepository directorRepository;
-    ActivityRepository activityRepository;
+    private final FilmRepository filmRepository;
+    private final RatingRepository ratingRepository;
+    private final GenreRepository genreRepository;
+    private final UserRepository userRepository;
+    private final DirectorRepository directorRepository;
+    private final ActivityRepository activityRepository;
 
     public FilmDto get(Long id) {
         return filmRepository.findById(id)

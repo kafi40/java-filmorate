@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.model.review.ReviewDto;
 import ru.yandex.practicum.filmorate.controller.model.review.ReviewRequest;
@@ -28,12 +26,11 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ReviewServiceImpl implements ReviewService {
-    ReviewRepository reviewRepository;
-    UserRepository userRepository;
-    FilmRepository filmRepository;
-    ActivityRepository activityRepository;
+    private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
+    private final FilmRepository filmRepository;
+    private final ActivityRepository activityRepository;
 
     public ReviewDto get(Long id) {
         return reviewRepository.findOne(id)

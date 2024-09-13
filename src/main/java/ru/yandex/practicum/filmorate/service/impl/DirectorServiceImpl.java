@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.mapper.DirectorMapper;
 import ru.yandex.practicum.filmorate.controller.model.director.DirectorDto;
@@ -17,9 +15,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DirectorServiceImpl implements DirectorService {
-    DirectorRepository directorRepository;
+    private final DirectorRepository directorRepository;
 
     public List<DirectorDto> getAll() {
         return directorRepository.findAll()
