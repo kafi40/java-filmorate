@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.model.rating.RatingDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -15,9 +13,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RatingServiceImpl implements RatingService {
-    RatingRepository ratingRepository;
+    private final RatingRepository ratingRepository;
 
     public RatingDto get(Long id) {
         return ratingRepository.get(id)

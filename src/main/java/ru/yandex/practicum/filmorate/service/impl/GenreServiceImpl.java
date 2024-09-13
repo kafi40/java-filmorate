@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.model.genre.GenreDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -15,9 +13,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GenreServiceImpl implements GenreService {
-    GenreRepository genreRepository;
+    private final GenreRepository genreRepository;
 
     public GenreDto get(Long id) {
         return genreRepository.findById(id)

@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.controller.model.film.FilmDto;
@@ -19,11 +17,10 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/films")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FilmController {
     private static final String TITLE = "title";
     private static final String DIRECTOR = "director";
-    FilmService filmService;
+    private final FilmService filmService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)

@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.mapper.ActivityMapper;
 import ru.yandex.practicum.filmorate.controller.mapper.FilmMapper;
@@ -33,12 +31,11 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
-    UserRepository userRepository;
-    FilmRepository filmRepository;
-    GenreRepository genreRepository;
-    ActivityRepository activityRepository;
+    private final UserRepository userRepository;
+    private final FilmRepository filmRepository;
+    private final GenreRepository genreRepository;
+    private final ActivityRepository activityRepository;
 
     public UserDto get(Long id) {
         return userRepository.findById(id)
