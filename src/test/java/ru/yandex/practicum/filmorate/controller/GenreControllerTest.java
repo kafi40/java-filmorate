@@ -8,14 +8,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import ru.yandex.practicum.filmorate.service.GenreService;
+import ru.yandex.practicum.filmorate.service.impl.GenreServiceImpl;
 
 @WebMvcTest(GenreController.class)
 public class GenreControllerTest {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    GenreService service;
+    GenreServiceImpl service;
 
     @Test
     public void forGetWhenFindGenreByIdThen() throws Exception {
